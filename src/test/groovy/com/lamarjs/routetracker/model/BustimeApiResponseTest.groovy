@@ -10,7 +10,7 @@ class BustimeApiResponseTest extends Specification {
     static List<Map<String, String>> emptyErrorList = new ArrayList<>()
     static List<Map<String, String>> nullErrorList
 
-    static String presentPayload = "payload: some payload."
+    static String presentPayload = '{"payload": "some payload"}'
     static String nullPayload
 
     @Unroll
