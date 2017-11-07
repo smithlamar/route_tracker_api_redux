@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 class RouteTrackerApiApplication {
 
     static void main(String[] args) {
-        log.info("Starting RouteTracker API...")
+        log.info("Started RouteTracker API.")
         SpringApplication.run RouteTrackerApiApplication, args
     }
 }

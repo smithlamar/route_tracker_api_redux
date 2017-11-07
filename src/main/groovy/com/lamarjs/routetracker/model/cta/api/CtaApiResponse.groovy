@@ -1,11 +1,13 @@
 package com.lamarjs.routetracker.model.cta.api
 
-interface CtaApiResponse<T> {
+interface CtaApiResponse {
+
     List<Map<String, String>> getError()
 
-    T getPayload()
+    Map<String, Object> getPayload()
 
     boolean hasError()
 
     boolean hasPayload()
+
 }
