@@ -1,8 +1,6 @@
 package com.lamarjs.routetracker.util
 
 import com.lamarjs.routetracker.model.common.Direction
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 
@@ -14,12 +12,9 @@ class CtaApiUriBuilder {
     private UriComponentsBuilder stopsUriBuilder
     private UriComponentsBuilder predictionsUriBuilder
 
-    @Autowired
     CtaApiUriBuilder(
-            @Qualifier("bustimeRoutesUriBuilder") UriComponentsBuilder routesUriBuilder,
-            @Qualifier("bustimeDirectionsUriBuilder") UriComponentsBuilder directionsUriBuilder,
-            @Qualifier("bustimeStopsUriBuilder") UriComponentsBuilder stopsUriBuilder,
-            @Qualifier("bustimePredictionsUriBuilder") UriComponentsBuilder predictionsUriBuilder) {
+            UriComponentsBuilder routesUriBuilder, UriComponentsBuilder directionsUriBuilder,
+            UriComponentsBuilder stopsUriBuilder, UriComponentsBuilder predictionsUriBuilder) {
         this.routesUriBuilder = routesUriBuilder
         this.directionsUriBuilder = directionsUriBuilder
         this.stopsUriBuilder = stopsUriBuilder

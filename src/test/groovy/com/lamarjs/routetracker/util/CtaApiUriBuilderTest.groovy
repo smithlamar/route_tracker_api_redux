@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
 
-@ContextConfiguration(classes = [CtaApiUriBuilder, CtaApiConfig])
+@ContextConfiguration(classes = [CtaApiConfig])
 class CtaApiUriBuilderTest extends Specification {
 
     static final String TEST_ROUTE_CODE = 4

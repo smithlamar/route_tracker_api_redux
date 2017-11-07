@@ -1,0 +1,6 @@
+spring:
+  jackson:
+    deserialization: false
+      unwrap-root-value
+      fail-on-unknown-properties=false
+

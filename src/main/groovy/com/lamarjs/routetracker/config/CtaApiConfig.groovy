@@ -1,5 +1,7 @@
 package com.lamarjs.routetracker.config
 
+import com.lamarjs.routetracker.service.CtaApiRequestService
+import com.lamarjs.routetracker.util.CtaApiUriBuilder
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -13,6 +15,20 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @PropertySource("classpath:cta-api.properties")
 @Configuration
 class CtaApiConfig {
+
+    @Bean
+    CtaApiRequestService ctaApiRequestService(CtaApiUriBuilder ctaApiUriBuilder) {
+        return new CtaApiRequestService(ctaApiUriBuilder)
+    }
+
+    @Bean
+    CtaApiUriBuilder ctaApiUriBuilder(
+            @Qualifier("bustimeRoutesUriBuilder") UriComponentsBuilder routesUriBuilder,
+            @Qualifier("bustimeDirectionsUriBuilder") UriComponentsBuilder directionsUriBuilder,
+            @Qualifier("bustimeStopsUriBuilder") UriComponentsBuilder stopsUriBuilder,
+            @Qualifier("bustimePredictionsUriBuilder") UriComponentsBuilder predictionsUriBuilder) {
+        return new CtaApiUriBuilder(routesUriBuilder, directionsUriBuilder, stopsUriBuilder, predictionsUriBuilder)
+    }
 
     @Bean
     String busApiKey(@Value("\${bus.api.key}") String key) {
