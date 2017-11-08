@@ -1,7 +1,7 @@
 package com.lamarjs.routetracker.util
 
 import com.lamarjs.routetracker.config.CtaApiConfig
-import com.lamarjs.routetracker.model.common.Direction
+import com.lamarjs.routetracker.model.cta.api.common.Direction
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.test.context.ContextConfiguration

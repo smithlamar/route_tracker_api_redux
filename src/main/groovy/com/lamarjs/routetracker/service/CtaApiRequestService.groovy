@@ -1,29 +1,31 @@
 package com.lamarjs.routetracker.service
 
+import com.lamarjs.routetracker.model.cta.api.CtaEntity
 import com.lamarjs.routetracker.model.cta.api.bus.BustimeApiResponse
-import com.lamarjs.routetracker.util.CtaApiUriBuilder
 import groovy.util.logging.Slf4j
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Slf4j
+@Service
 class CtaApiRequestService {
 
-    CtaApiUriBuilder uriBuilder
+    RestTemplate restTemplate
 
-    CtaApiRequestService(CtaApiUriBuilder uriBuilder) {
-        this.uriBuilder = uriBuilder
+    CtaApiRequestService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate
     }
 
-    BustimeApiResponse requestRoutes() {
-        RestTemplate restTemplate = new RestTemplate()
-        URI url = uriBuilder.buildRoutesUri()
+    public <T extends CtaEntity> BustimeApiResponse<T> sendGet(URI uri,
+            ParameterizedTypeReference<BustimeApiResponse<T>> responseTypeReference) {
 
-        ResponseEntity<BustimeApiResponse> response = restTemplate.
-                exchange(url, HttpMethod.GET, null, BustimeApiResponse)
-        log.info("Bustime request returned status code: ${response.getStatusCodeValue()}")
+        ResponseEntity<BustimeApiResponse<T>> responseEntity = restTemplate.
+                exchange(uri, HttpMethod.GET, null, responseTypeReference)
+        log.info("Bus-time request returned status code: ${responseEntity.getStatusCodeValue()}")
 
-        return response.getBody()
+        return responseEntity.getBody()
     }
 }

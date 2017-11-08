@@ -1,6 +1,7 @@
 package com.lamarjs.routetracker
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.lamarjs.routetracker.util.CtaApiUriBuilder
 import groovy.json.JsonSlurper
 import spock.lang.Shared
 import spock.lang.Specification
@@ -8,7 +9,7 @@ import spock.lang.Specification
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import static com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_ROOT_VALUE
 
-class BaseSpec extends Specification {
+class BaseSpecification extends Specification {
 
     @Shared
     JsonSlurper slurper = new JsonSlurper()

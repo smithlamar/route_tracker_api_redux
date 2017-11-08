@@ -1,10 +1,10 @@
 package com.lamarjs.routetracker.model.cta.api.bus
 
-import com.lamarjs.routetracker.BaseSpec
+import com.lamarjs.routetracker.BaseSpecification
 import spock.lang.Unroll
 
 @Unroll
-class BustimeApiResponseSpec extends BaseSpec {
+class BustimeApiResponseSpecification extends BaseSpecification {
 
     def "should succesfully deserialize #jsonSample"() {
 
@@ -20,7 +20,7 @@ class BustimeApiResponseSpec extends BaseSpec {
         routesResponse.getPayload() == slurpedSample.get("bustime-response")
 
         where:
-        jsonSample << jsonSampleFileMap.keySet().toList().toArray()
+        jsonSample << jsonSampleFileMap.keySet().toList()
     }
 
     def "should deserialize #jsonSampleFileUri to have error indicator #hasError"() {

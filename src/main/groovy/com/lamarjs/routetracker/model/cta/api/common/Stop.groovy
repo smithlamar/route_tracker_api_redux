@@ -1,8 +1,9 @@
-package com.lamarjs.routetracker.model.common
+package com.lamarjs.routetracker.model.cta.api.common
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.lamarjs.routetracker.model.cta.api.CtaEntity
 
-class Stop {
+class Stop implements CtaEntity {
     @JsonProperty(value = "stpid")
     int stopId;
     @JsonProperty(value = "stpnm")

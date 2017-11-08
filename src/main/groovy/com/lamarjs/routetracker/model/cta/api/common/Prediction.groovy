@@ -1,8 +1,9 @@
-package com.lamarjs.routetracker.model.common
+package com.lamarjs.routetracker.model.cta.api.common
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.lamarjs.routetracker.model.cta.api.CtaEntity
 
-class Prediction {
+class Prediction implements CtaEntity {
     @JsonProperty(value = "tmstmp")
     String createdTimestamp;  // Ex: "20170314 11:25"
     @JsonProperty(value = "stpnm")

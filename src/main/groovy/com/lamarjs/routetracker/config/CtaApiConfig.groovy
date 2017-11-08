@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 import org.springframework.context.annotation.Scope
+import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE
@@ -17,8 +18,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 class CtaApiConfig {
 
     @Bean
-    CtaApiRequestService ctaApiRequestService(CtaApiUriBuilder ctaApiUriBuilder) {
-        return new CtaApiRequestService(ctaApiUriBuilder)
+    CtaApiRequestService ctaApiRequestService(RestTemplate restTemplate) {
+        return new CtaApiRequestService(restTemplate)
     }
 
     @Bean
@@ -26,8 +27,21 @@ class CtaApiConfig {
             @Qualifier("bustimeRoutesUriBuilder") UriComponentsBuilder routesUriBuilder,
             @Qualifier("bustimeDirectionsUriBuilder") UriComponentsBuilder directionsUriBuilder,
             @Qualifier("bustimeStopsUriBuilder") UriComponentsBuilder stopsUriBuilder,
-            @Qualifier("bustimePredictionsUriBuilder") UriComponentsBuilder predictionsUriBuilder) {
-        return new CtaApiUriBuilder(routesUriBuilder, directionsUriBuilder, stopsUriBuilder, predictionsUriBuilder)
+            @Qualifier("bustimePredictionsUriBuilder") UriComponentsBuilder predictionsUriBuilder,
+            @Qualifier("defaultPredictionLimit") int defaultPredictionLimit) {
+
+        return new CtaApiUriBuilder(routesUriBuilder, directionsUriBuilder, stopsUriBuilder, predictionsUriBuilder,
+                                    defaultPredictionLimit)
+    }
+
+    @Bean
+    RestTemplate restTemplate() {
+        return new RestTemplate()
+    }
+
+    @Bean
+    int defaultPredictionLimit(@Value("\${bus.api.defaults.prediction-limit}") String limit) {
+        return limit as int
     }
 
     @Bean
@@ -41,7 +55,7 @@ class CtaApiConfig {
             @Value("\${bus.api.url.host}") String host,
             @Value("\${bus.api.url.path.base}") String basePath,
             @Value("\${bus.api.url.query-name.key}") String queryNameKey,
-            String busApikey,
+            @Qualifier("busApiKey") String busApikey,
             @Value("\${bus.api.url.query-name.response-format}") String queryNameResponseFormat,
             @Value("\${bus.api.response.format}") String format) {
 
