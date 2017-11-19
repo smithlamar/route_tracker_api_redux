@@ -6,8 +6,10 @@ interface CtaApiResponse<T extends CtaEntity> {
 
     List<T> getPayloadTargetEntity()
 
-    List<Map<String, String>> getError()
+    List<Map<String, String>> getErrors()
 
-    boolean hasError()
+    List<String> getErrorMessages()
+
+    boolean hasErrors()
 
 }

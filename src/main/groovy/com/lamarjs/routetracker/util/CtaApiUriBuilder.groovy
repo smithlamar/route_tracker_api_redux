@@ -32,19 +32,19 @@ class CtaApiUriBuilder {
         return routesUriBuilder.build(true).toUri()
     }
 
-    URI buildDirectionsUri(String routeCode) {
-        return build(directionsUriBuilder, [routeCode])
+    URI buildDirectionsUri(String routeId) {
+        return build(directionsUriBuilder, [routeId])
     }
 
-    URI buildStopsUri(String routeCode, Direction direction) {
-        return build(stopsUriBuilder, [routeCode, direction])
+    URI buildStopsUri(String routeId, Direction direction) {
+        return build(stopsUriBuilder, [routeId, direction])
     }
 
-    URI buildPredictionsUri(String routeCode, String stopId, int resultsLimit) {
-        return build(predictionsUriBuilder, [routeCode, stopId, resultsLimit])
+    URI buildPredictionsUri(String routeId, String stopId, int resultsLimit) {
+        return build(predictionsUriBuilder, [routeId, stopId, resultsLimit])
     }
 
-    URI buildPredictionsUri(String routeCode, String stopId) {
-        return buildPredictionsUri(routeCode, stopId, defaultPredictionLimit)
+    URI buildPredictionsUri(String routeId, String stopId) {
+        return buildPredictionsUri(routeId, stopId, defaultPredictionLimit)
     }
 }

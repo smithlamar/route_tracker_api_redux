@@ -1,6 +1,7 @@
 package com.lamarjs.routetracker.config
 
 import com.lamarjs.routetracker.service.CtaApiRequestService
+import com.lamarjs.routetracker.service.CtaRouteAssembler
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -16,6 +17,11 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @PropertySource("classpath:cta-api.properties")
 @Configuration
 class CtaApiConfig {
+
+    @Bean
+    CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService, CtaApiUriBuilder ctaApiUriBuilder) {
+        return new CtaRouteAssembler(ctaApiRequestService, ctaApiUriBuilder)
+    }
 
     @Bean
     CtaApiRequestService ctaApiRequestService(RestTemplate restTemplate) {
