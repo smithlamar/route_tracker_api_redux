@@ -1,6 +1,7 @@
 package com.lamarjs.routetracker.service
 
 import com.lamarjs.routetracker.BaseSpecification
+import com.lamarjs.routetracker.RouteTrackerApiApplication
 import com.lamarjs.routetracker.config.CtaApiConfig
 import com.lamarjs.routetracker.model.cta.api.common.Route
 import org.springframework.beans.factory.annotation.Autowired
@@ -8,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
 
+@SpringBootTest
 @ContextConfiguration(classes = [CtaApiConfig])
 class CtaRouteAssemblerTest extends Specification {
 

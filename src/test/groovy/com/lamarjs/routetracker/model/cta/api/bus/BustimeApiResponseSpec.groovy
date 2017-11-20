@@ -4,20 +4,20 @@ import com.lamarjs.routetracker.BaseSpecification
 import spock.lang.Unroll
 
 @Unroll
-class BustimeApiResponseSpecification extends BaseSpecification {
+class BustimeApiResponseSpec extends BaseSpecification {
 
     def "should succesfully deserialize #jsonSample"() {
 
         given:
 
         String jsonString = jsonSampleFileMap.get(jsonSample)
-        Map<String, Object> slurpedSample = slurpedJson.get(jsonSample)
+        BustimeResponse slurpedSample = slurpedJson.get(jsonSample)
 
-        and: "json sample mapped to BustimeApiResponse"
-        BustimeApiResponse routesResponse = mapper.readerFor(BustimeApiResponse).readValue(jsonString)
+        and: "json sample mapped to BustimeApiResponseWrapper"
+        BustimeApiResponseWrapper routesResponse = mapper.readerFor(BustimeApiResponseWrapper).readValue(jsonString)
 
         expect:
-        routesResponse.getPayload() == slurpedSample.get("bustime-response")
+        routesResponse.getBustimeResponse().getErrors() == slurpedSample.get("bustime-response")
 
         where:
         jsonSample << jsonSampleFileMap.keySet().toList()
@@ -29,10 +29,10 @@ class BustimeApiResponseSpecification extends BaseSpecification {
         Map<String, Object> expectedDeserializedObject = slurpedJson.get(jsonSampleFileUri)
 
         and: "json sample is mapped to bustime response"
-        BustimeApiResponse routesResponse = mapper.readerFor(BustimeApiResponse).readValue(jsonString)
+        BustimeApiResponseWrapper routesResponse = mapper.readerFor(BustimeApiResponseWrapper).readValue(jsonString)
 
         expect:
-        routesResponse.getPayload() == expectedDeserializedObject.get("bustime-response")
+        routesResponse.getBustimeResponse() == expectedDeserializedObject.get("bustime-response")
 
         where:
         jsonSampleFileUri            | hasError

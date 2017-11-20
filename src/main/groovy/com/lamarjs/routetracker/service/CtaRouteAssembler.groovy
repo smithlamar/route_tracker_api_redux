@@ -1,8 +1,5 @@
 package com.lamarjs.routetracker.service
 
-import com.lamarjs.routetracker.model.cta.api.bus.DirectionsApiResponse
-import com.lamarjs.routetracker.model.cta.api.bus.RoutesApiResponse
-import com.lamarjs.routetracker.model.cta.api.bus.StopsApiResponse
 import com.lamarjs.routetracker.model.cta.api.common.Direction
 import com.lamarjs.routetracker.model.cta.api.common.Route
 import com.lamarjs.routetracker.model.cta.api.common.Stop
@@ -24,20 +21,22 @@ class CtaRouteAssembler {
 
     List<Route> initializeRoutes() {
 
-        List<Route> routes = ctaApiRequestService.sendRoutesRequest(ctaApiUriBuilder.buildRoutesUri());
+        List<Route> routes = ctaApiRequestService.sendGetRequest(ctaApiUriBuilder.buildRoutesUri()).getRoutes()
 
-        println("Route id is ${routes.get(0).getRouteId()}")
+        println("Route id is ${routes.get(0)}")
 
-        routes.forEach({ Route route ->
+        routes.forEach({ route ->
 
             List<Direction> directions = ctaApiRequestService.
-                    sendDirectionsRequest(ctaApiUriBuilder.buildDirectionsUri(route.getRouteId()))
+                    sendGetRequest(ctaApiUriBuilder.buildDirectionsUri(route.getRouteId())).getDirections()
 
             route.setStops(new LinkedHashMap<Direction, List<Stop>>(100))
 
             directions.forEach({ direction ->
+
                 List<Stop> stops = ctaApiRequestService.
-                        sendStopsRequest(ctaApiUriBuilder.buildStopsUri(route.getRouteId(), direction))
+                        sendGetRequest(ctaApiUriBuilder.buildStopsUri(route.getRouteId(), direction)).getStops()
+
                 route.getStops().put(direction, stops)
             })
         })

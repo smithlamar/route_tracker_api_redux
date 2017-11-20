@@ -1,10 +1,6 @@
 package com.lamarjs.routetracker.model.cta.api
 
-interface CtaApiResponse<T extends CtaEntity> {
-
-    Map<String, Object> getPayload()
-
-    List<T> getPayloadTargetEntity()
+interface CtaApiResponse {
 
     List<Map<String, String>> getErrors()
 

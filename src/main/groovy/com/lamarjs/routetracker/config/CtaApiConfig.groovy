@@ -75,7 +75,7 @@ class CtaApiConfig {
     UriComponentsBuilder bustimeRoutesUriBuilder(
             @Qualifier("bustimeBaseUri") UriComponentsBuilder bustimeBaseUri,
             @Value("\${bus.api.url.path.routes}") String path) {
-        return bustimeBaseUri.path(path);
+        return bustimeBaseUri.path(path)
     }
 
     @Bean
@@ -83,8 +83,8 @@ class CtaApiConfig {
     UriComponentsBuilder bustimeDirectionsUriBuilder(
             @Qualifier("bustimeBaseUri") UriComponentsBuilder bustimeBaseUri,
             @Value("\${bus.api.url.path.directions}") String path,
-            @Value("\${bus.api.url.query-name.route-code}") String queryNameRouteCode) {
-        return bustimeBaseUri.path(path).queryParam(queryNameRouteCode, "{routeCode}")
+            @Value("\${bus.api.url.query-name.routeId}") String queryNameRouteId) {
+        return bustimeBaseUri.path(path).queryParam(queryNameRouteId, "{RouteId}")
     }
 
     @Bean
@@ -92,10 +92,10 @@ class CtaApiConfig {
     UriComponentsBuilder bustimeStopsUriBuilder(
             @Qualifier("bustimeBaseUri") UriComponentsBuilder bustimeBaseUri,
             @Value("\${bus.api.url.path.stops}") String path,
-            @Value("\${bus.api.url.query-name.route-code}") String queryNameRoute,
+            @Value("\${bus.api.url.query-name.routeId}") String queryNameRouteId,
             @Value("\${bus.api.url.query-name.direction}") String queryNameDirection) {
 
-        return bustimeBaseUri.path(path).queryParam(queryNameRoute, "{routeCode}").
+        return bustimeBaseUri.path(path).queryParam(queryNameRouteId, "{routeId}").
                 queryParam(queryNameDirection, "{direction}")
     }
 
@@ -104,11 +104,11 @@ class CtaApiConfig {
     UriComponentsBuilder bustimePredictionsUriBuilder(
             @Qualifier("bustimeBaseUri") UriComponentsBuilder bustimeBaseUri,
             @Value("\${bus.api.url.path.predictions}") String path,
-            @Value("\${bus.api.url.query-name.route-code}") String queryNameRoute,
+            @Value("\${bus.api.url.query-name.routeId}") String queryNameRouteId,
             @Value("\${bus.api.url.query-name.stop-id}") String queryNameStopId,
             @Value("\${bus.api.url.query-name.results-limit}") String queryNameResultsLimit) {
 
-        return bustimeBaseUri.path(path).queryParam(queryNameRoute, "{routeCode}").
+        return bustimeBaseUri.path(path).queryParam(queryNameRouteId, "{RouteId}").
                 queryParam(queryNameStopId, "{stopId}").
                 queryParam(queryNameResultsLimit, "{resultsLimit}")
     }
