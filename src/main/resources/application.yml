@@ -1,0 +1,4 @@
+spring:
+  jackson:
+    deserialization: false
+      fail_on_ignored_properties

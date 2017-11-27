@@ -20,7 +20,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_ROOT_
 class BaseSpecification extends Specification {
 
     final static String TEST_ROUTE_ID = 4
-    final static Direction TEST_DIRECTION = Direction.NORTHBOUND
+    final static Direction TEST_DIRECTION = new Direction()
     final static String TEST_STOP_ID = 1584
     final static String TEST_ROUTE_COLOR = "cc3300"
     final static String TEST_ROUTE_NAME = "Cottage Grove"

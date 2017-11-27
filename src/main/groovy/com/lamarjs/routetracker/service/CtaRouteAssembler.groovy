@@ -5,14 +5,15 @@ import com.lamarjs.routetracker.model.cta.api.common.Route
 import com.lamarjs.routetracker.model.cta.api.common.Stop
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
 import groovy.util.logging.Slf4j
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
 class CtaRouteAssembler {
 
-    private CtaApiRequestService ctaApiRequestService
-    private CtaApiUriBuilder ctaApiUriBuilder
+    CtaApiRequestService ctaApiRequestService
+    CtaApiUriBuilder ctaApiUriBuilder
 
     CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, CtaApiUriBuilder ctaApiUriBuilder) {
         this.ctaApiRequestService = ctaApiRequestService

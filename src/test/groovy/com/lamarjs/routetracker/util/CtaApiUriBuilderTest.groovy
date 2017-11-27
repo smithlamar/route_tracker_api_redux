@@ -11,7 +11,7 @@ import spock.lang.Specification
 class CtaApiUriBuilderTest extends Specification {
 
     static final String TEST_ROUTE_CODE = 4
-    static final Direction TEST_DIRECTION = Direction.NORTHBOUND
+    static final Direction TEST_DIRECTION = new Direction(direction: Direction.NORTHBOUND)
     static final String TEST_STOP_ID = 1584
     static final int TEST_RESULTS_LIMIT = 3
 
