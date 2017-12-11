@@ -1,7 +1,6 @@
 package com.lamarjs.routetracker
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.lamarjs.routetracker.model.cta.api.common.Direction
 import com.lamarjs.routetracker.service.CtaApiRequestService
 import groovy.json.JsonSlurper
 import org.springframework.boot.test.context.SpringBootTest
@@ -16,41 +15,25 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_ROOT_
 @SpringBootTest
 class BaseSpecification extends Specification {
 
-    final static String TEST_ROUTE_ID = 4
-    final static Direction TEST_DIRECTION = new Direction(direction: "Northbound")
-    final static String TEST_STOP_ID = 1584
-    final static String TEST_ROUTE_COLOR = "cc3300"
-    final static String TEST_ROUTE_NAME = "Cottage Grove"
-
     @Shared
-    JsonSlurper slurper = new JsonSlurper()
+    Map<String, String> jsonSamplesAsStrings = new HashMap<>()
     @Shared
-    Map<String, String> jsonSampleFileMap = new HashMap<>()
-    @Shared
-    Map<String, Map<String, Object>> slurpedJson = new HashMap<>()
+    Map<String, Map<String, Object>> jsonSamplesAsMaps = new HashMap<>()
     @Shared
     ObjectMapper mapper = new ObjectMapper()
-    @Shared
-    RestTemplate restTemplate = new RestTemplate()
-    @Shared
-    MockRestServiceServer server
-    @Shared
-    CtaApiRequestService requestService = new CtaApiRequestService(restTemplate)
 
     void setupSpec() {
 
         List<File> jsonSampleUris = new File('src/test/resources/sampledata/bustimeapi/response/json/').listFiles().
                 toList()
 
+        JsonSlurper slurper = new JsonSlurper()
         jsonSampleUris.forEach({ file ->
-            jsonSampleFileMap.put(file.getName(), file.getText())
-            slurpedJson.put(file.getName(), slurper.parse(file) as Map<String, Object>)
+            jsonSamplesAsStrings.put(file.getName(), file.getText())
+            jsonSamplesAsMaps.put(file.getName(), slurper.parse(file) as Map<String, Object>)
         })
 
         mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
-        mapper.configure(UNWRAP_ROOT_VALUE, false)
-
-        MockRestServiceServer
-        server = MockRestServiceServer.bindTo(restTemplate).build();
+        mapper.configure(UNWRAP_ROOT_VALUE, true)
     }
 }
