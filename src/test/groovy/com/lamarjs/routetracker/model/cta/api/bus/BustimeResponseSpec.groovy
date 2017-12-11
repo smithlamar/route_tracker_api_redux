@@ -1,11 +1,16 @@
 package com.lamarjs.routetracker.model.cta.api.bus
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.BaseSpecification
-import org.junit.Assert
 import spock.lang.Unroll
+
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
+import static com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_ROOT_VALUE
 
 @Unroll
 class BustimeResponseSpec extends BaseSpecification {
+
+    ObjectMapper mapper = new ObjectMapper().configure(UNWRAP_ROOT_VALUE, true).configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     def "mapper should succesfully deserialize #jsonSample"() {
 

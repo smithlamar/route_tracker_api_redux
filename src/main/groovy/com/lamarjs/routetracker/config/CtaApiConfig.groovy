@@ -24,8 +24,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 class CtaApiConfig {
 
     @Bean
-    CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService, CtaApiUriBuilder ctaApiUriBuilder) {
-        return new CtaRouteAssembler(ctaApiRequestService, ctaApiUriBuilder)
+    CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService) {
+        return new CtaRouteAssembler(ctaApiRequestService)
     }
 
     @Bean
@@ -36,7 +36,7 @@ class CtaApiConfig {
 
     @Bean
     ObjectMapper objectMapper() {
-        ObjectMapper mapper = new ObjectMapper()
+        return new ObjectMapper()
     }
 
 

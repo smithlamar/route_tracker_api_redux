@@ -12,32 +12,26 @@ import org.springframework.stereotype.Service
 class CtaRouteAssembler {
 
     CtaApiRequestService ctaApiRequestService
-    CtaApiUriBuilder ctaApiUriBuilder
 
     @Autowired
-    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, CtaApiUriBuilder ctaApiUriBuilder) {
+    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService) {
         this.ctaApiRequestService = ctaApiRequestService
-        this.ctaApiUriBuilder = ctaApiUriBuilder
     }
 
     List<Route> initializeRoutes() {
 
-        List<Route> routes = ctaApiRequestService.sendGetRequest(ctaApiUriBuilder.buildRoutesUri()).getBody().getRoutes()
+        List<Route> routes = ctaApiRequestService.getRoutes()
 
         log.debug("Route id is ${routes.get(0).getRouteId()}")
 
         routes.forEach({ route ->
 
-            List<Direction> directions = ctaApiRequestService.
-                    sendGetRequest(ctaApiUriBuilder.buildDirectionsUri(route.getRouteId())).getBody().getDirections()
+            List<Direction> directions = ctaApiRequestService.getDirections(route.getRouteId())
 
             route.setStops(new LinkedHashMap<Direction, List<Stop>>(100))
-
             directions.forEach({ direction ->
 
-                List<Stop> stops = ctaApiRequestService.
-                        sendGetRequest(ctaApiUriBuilder.buildStopsUri(route.getRouteId(), direction)).getBody().getStops()
-
+                List<Stop> stops = ctaApiRequestService.getStops(route.getRouteId(), direction)
                 route.getStops().put(direction, stops)
             })
         })

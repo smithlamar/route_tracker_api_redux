@@ -1,5 +1,6 @@
 package com.lamarjs.routetracker.model.cta.api.bus
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
 import com.lamarjs.routetracker.model.cta.api.CtaApiResponse
 import com.lamarjs.routetracker.model.cta.api.common.Direction
@@ -14,5 +15,6 @@ class BustimeResponse implements CtaApiResponse {
     List<Route> routes
     List<Direction> directions
     List<Stop> stops
+    @JsonProperty(value = "prd")
     List<Prediction> predictions
 }
