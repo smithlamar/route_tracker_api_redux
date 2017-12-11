@@ -1,6 +1,7 @@
 package com.lamarjs.routetracker.service
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.model.cta.api.bus.BustimeResponse
 import com.lamarjs.routetracker.model.cta.api.common.Direction
@@ -21,8 +22,10 @@ class CtaApiRequestService {
     @Autowired
     CtaApiRequestService(RestTemplate restTemplate, ObjectMapper objectMapper, CtaApiUriBuilder ctaApiUriBuilder) {
         this.restTemplate = restTemplate
-        this.objectMapper = objectMapper
         this.ctaApiUriBuilder = ctaApiUriBuilder
+        this.objectMapper = objectMapper
+
+        objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true)
     }
 
     BustimeResponse sendGetRequest(URI uri) {
@@ -30,30 +33,27 @@ class CtaApiRequestService {
         ResponseEntity<String> responseEntity
         responseEntity = restTemplate.exchange(uri, HttpMethod.GET, null, String)
 
-        println(responseEntity.getBody())
 
         BustimeResponse bustimeResponse = objectMapper.readValue(responseEntity.getBody(), BustimeResponse)
 
         return bustimeResponse
     }
 
-    List<Direction> getDirections(String routeId) {
+    List<Direction> getDirections(String routeId) throws Exception {
 
         URI uri = ctaApiUriBuilder.buildDirectionsUri(routeId)
 
-        ResponseEntity<String> responseEntity
-        responseEntity = restTemplate.exchange(uri, HttpMethod.GET, null, String)
+        ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, null, String)
 
-        println(responseEntity.getBody())
+        TypeReference typeRef = new TypeReference<Map<String, BustimeResponse>>() {}
+        BustimeResponse bustimeResponse = objectMapper.readValue(responseEntity.getBody(), BustimeResponse)
+        log.debug(bustimeResponse.getDirections().toString())
 
-        TypeReference typeRef = new TypeReference<Map<String, Map<String, List<Direction>>>>() {}
-
-        Map<String, Map<String, List<Direction>>> body = objectMapper.readValue(responseEntity.getBody(), typeRef)
-
-        return body.get("bustime-response").get("directions")
+        reportErrors(bustimeResponse)
+        return bustimeResponse.getDirections()
     }
 
-    void reportErrors(BustimeResponse response) throws Exception {
+    private static void reportErrors(BustimeResponse response) throws Exception {
 
         if (response.hasErrors()) {
             log.error("Get request resulted in ${response.getErrors().size()} error(s)")

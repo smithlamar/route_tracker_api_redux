@@ -8,7 +8,7 @@ import com.lamarjs.routetracker.model.cta.api.common.Route
 import com.lamarjs.routetracker.model.cta.api.common.Stop
 import groovy.transform.ToString
 
-@ToString(includeNames = true)
+@ToString
 @JsonRootName(value = "bustime-response")
 class BustimeResponse implements CtaApiResponse {
     List<Route> routes

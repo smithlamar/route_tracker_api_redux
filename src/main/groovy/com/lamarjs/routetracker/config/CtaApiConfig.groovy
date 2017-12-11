@@ -1,5 +1,6 @@
 package com.lamarjs.routetracker.config
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.service.CtaApiRequestService
 import com.lamarjs.routetracker.service.CtaRouteAssembler
@@ -28,15 +29,14 @@ class CtaApiConfig {
     }
 
     @Bean
-    CtaApiRequestService ctaApiRequestService(RestTemplate restTemplate, ObjectMapper objectMapper, CtaApiUriBuilder ctaApiUriBuilder) {
+    CtaApiRequestService ctaApiRequestService(RestTemplate restTemplate,
+                                              @Qualifier("objectMapper") ObjectMapper objectMapper, CtaApiUriBuilder ctaApiUriBuilder) {
         return new CtaApiRequestService(restTemplate, objectMapper, ctaApiUriBuilder)
     }
 
     @Bean
     ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper()
-        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
-        mapper.configure(UNWRAP_ROOT_VALUE, true)
     }
 
 

@@ -21,6 +21,7 @@ class CtaApiRequestServiceTest extends BaseSpecification {
     CtaApiRequestService requestService
 
     private static final String TEST_ROUTE_ID_COTTAGE_GROVE = 4
+    private static final String TEST_ROUTE_ID_BAD_ROUTE = 0
 
     def "directionShouldBeInstantiatedFromRequestService"() {
         List<Direction> directions = requestService.getDirections(TEST_ROUTE_ID_COTTAGE_GROVE)
@@ -28,6 +29,21 @@ class CtaApiRequestServiceTest extends BaseSpecification {
         expect:
         directions
         directions.get(0)
+    }
+
+    def "errorsShouldBeInstantiatedFromRequestServiceGivenBadRoute"() {
+        Exception e
+
+        try {
+            List<Direction> directions = requestService.getDirections(TEST_ROUTE_ID_BAD_ROUTE)
+        }
+        catch (Exception error) {
+            e = error
+            println(e.getMessage())
+        }
+        expect:
+        e
+        e.getMessage()
     }
 
     def "directionsShouldBeInstantiatedFromRequestService"() {
