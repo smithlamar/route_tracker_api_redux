@@ -16,8 +16,6 @@ class BaseSpecification extends Specification {
     Map<String, String> jsonSampleFilesAsStrings
     @Shared
     Map<String, Map<String, Object>> jsonSamplesAsMaps
-    @Shared
-    ObjectMapper mapper
 
     void setupSpec() {
 
@@ -32,9 +30,5 @@ class BaseSpecification extends Specification {
             jsonSampleFilesAsStrings.put(file.getName(), file.getText())
             jsonSamplesAsMaps.put(file.getName(), slurper.parse(file) as Map<String, Object>)
         })
-
-        mapper = new ObjectMapper()
-        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
-        mapper.configure(UNWRAP_ROOT_VALUE, true)
     }
 }

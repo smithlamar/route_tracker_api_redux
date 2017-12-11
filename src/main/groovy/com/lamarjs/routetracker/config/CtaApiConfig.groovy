@@ -1,5 +1,6 @@
 package com.lamarjs.routetracker.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.service.CtaApiRequestService
 import com.lamarjs.routetracker.service.CtaRouteAssembler
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
@@ -13,6 +14,8 @@ import org.springframework.context.annotation.Scope
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
+import static com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_ROOT_VALUE
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE
 
 @PropertySource("classpath:cta-api.properties")
@@ -25,9 +28,17 @@ class CtaApiConfig {
     }
 
     @Bean
-    CtaApiRequestService ctaApiRequestService(RestTemplate restTemplate) {
-        return new CtaApiRequestService(restTemplate)
+    CtaApiRequestService ctaApiRequestService(RestTemplate restTemplate, ObjectMapper objectMapper, CtaApiUriBuilder ctaApiUriBuilder) {
+        return new CtaApiRequestService(restTemplate, objectMapper, ctaApiUriBuilder)
     }
+
+    @Bean
+    ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper()
+        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+        mapper.configure(UNWRAP_ROOT_VALUE, true)
+    }
+
 
     @Bean
     RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {

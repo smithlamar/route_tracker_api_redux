@@ -2,6 +2,7 @@ package com.lamarjs.routetracker.service
 
 import com.lamarjs.routetracker.BaseSpecification
 import com.lamarjs.routetracker.model.cta.api.bus.BustimeResponse
+import com.lamarjs.routetracker.model.cta.api.common.Direction
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
 import org.junit.Assert
 import org.junit.Test
@@ -19,19 +20,21 @@ class CtaApiRequestServiceTest extends BaseSpecification {
     @Autowired
     CtaApiRequestService requestService
 
-    def "bustimeResponseShouldBeInstantiatedFromRequestService"() {
-        URI uri = builder.buildDirectionsUri("4")
-        ResponseEntity<BustimeResponse> response = requestService.sendGetRequest(uri)
+    private static final String TEST_ROUTE_ID_COTTAGE_GROVE = 4
+
+    def "directionShouldBeInstantiatedFromRequestService"() {
+        List<Direction> directions = requestService.getDirections(TEST_ROUTE_ID_COTTAGE_GROVE)
 
         expect:
-        response
+        directions
+        directions.get(0)
     }
 
     def "directionsShouldBeInstantiatedFromRequestService"() {
-        URI uri = builder.buildDirectionsUri("4")
+        URI uri = builder.buildRoutesUri()
         ResponseEntity<BustimeResponse> response = requestService.sendGetRequest(uri)
 
         expect:
-        response.getBody().getDirections()
+        response.getBody().getRoutes()
     }
 }
