@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.transform.ToString
 
 @ToString(includeNames = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
 class Prediction {
     @JsonProperty(value = "tmstmp")
     String createdTimestamp;  // Ex: "20170314 11:25"

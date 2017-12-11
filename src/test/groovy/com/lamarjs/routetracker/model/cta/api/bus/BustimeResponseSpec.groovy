@@ -1,37 +1,38 @@
 package com.lamarjs.routetracker.model.cta.api.bus
 
 import com.lamarjs.routetracker.BaseSpecification
+import org.junit.Assert
 import spock.lang.Unroll
 
 @Unroll
 class BustimeResponseSpec extends BaseSpecification {
 
-    def "should succesfully deserialize #jsonSample"() {
+    def "mapper should succesfully deserialize #jsonSample"() {
 
         given:
 
-        String jsonString = jsonSamplesAsStrings.get(jsonSample)
+        String jsonString = jsonSampleFilesAsStrings.get(jsonSample)
 
         and: "json sample mapped to BustimeApiResponseWrapper"
         BustimeResponse routesResponse = mapper.readerFor(BustimeResponse).readValue(jsonString)
 
         expect:
-        routesResponse.getErrors() == jsonSamplesAsMaps.get("bustime-response")
+        routesResponse
 
         where:
-        jsonSample << jsonSamplesAsStrings.keySet().toList()
+        jsonSample << jsonSampleFilesAsStrings.keySet().toList()
     }
 
     def "should deserialize #jsonSampleFileUri to have error indicator #hasError"() {
         given: "Sample json"
-        String jsonString = jsonSamplesAsStrings.get(jsonSampleFileUri)
+        String jsonString = jsonSampleFilesAsStrings.get(jsonSampleFileUri)
         Map<String, Object> expectedDeserializedObject = jsonSamplesAsMaps.get(jsonSampleFileUri)
 
         and: "json sample is mapped to bustime response"
         BustimeResponse routesResponse = mapper.readerFor(BustimeResponse).readValue(jsonString)
 
         expect:
-        routesResponse.getBustimeResponse() == expectedDeserializedObject.get("bustime-response")
+        routesResponse.hasErrors() == hasError
 
         where:
         jsonSampleFileUri            | hasError

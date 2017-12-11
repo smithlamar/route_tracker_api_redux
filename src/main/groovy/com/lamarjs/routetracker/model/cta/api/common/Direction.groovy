@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.transform.ToString
 
 @ToString(includeNames = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
 class Direction {
 
 //    static final String NORTHBOUND = "Northbound", SOUTHBOUND = "Southbound", EASTBOUND = "Eastbound",

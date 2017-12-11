@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.transform.ToString
 
 @ToString(includeNames = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
 class Stop {
     @JsonProperty(value = "stpid")
     int stopId;

@@ -7,7 +7,7 @@ class BustimeResponseTest extends BaseSpecification {
     def "responseShouldBeInstantiatedFromMapper"() {
 
 
-        String jsonString = jsonSamplesAsStrings.get("directions.json")
+        String jsonString = jsonSampleFilesAsStrings.get("directions.json")
 
 
         BustimeResponse response = mapper.readValue(jsonString, BustimeResponse)
