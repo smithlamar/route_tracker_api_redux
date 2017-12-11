@@ -1,9 +1,12 @@
 package com.lamarjs.routetracker.model.cta.api.common
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.lamarjs.routetracker.model.cta.api.CtaEntity
+import groovy.transform.ToString
 
-class Stop implements CtaEntity {
+@ToString(includeNames = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
+class Stop {
     @JsonProperty(value = "stpid")
     int stopId;
     @JsonProperty(value = "stpnm")

@@ -1,11 +1,25 @@
 package com.lamarjs.routetracker.model.cta.api
 
-interface CtaApiResponse {
+import com.fasterxml.jackson.annotation.JsonProperty
 
-    List<Map<String, String>> getErrors()
+trait CtaApiResponse {
 
-    List<String> getErrorMessages()
+    @JsonProperty(value = "error")
+    List<Map<String, String>> errors
 
-    boolean hasErrors()
+    List<String> getErrorMessages() {
+
+        List<String> errorMessages = new ArrayList<>()
+
+        getErrors().forEach({ error ->
+            errorMessages.add(error.get("msg"))
+        })
+
+        return errorMessages
+    }
+
+    boolean hasErrors() {
+        return errors
+    }
 
 }

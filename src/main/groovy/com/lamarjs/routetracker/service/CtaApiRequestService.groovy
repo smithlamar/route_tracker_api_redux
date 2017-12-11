@@ -1,36 +1,30 @@
 package com.lamarjs.routetracker.service
 
-import com.lamarjs.routetracker.model.cta.api.bus.BustimeApiResponseWrapper
 import com.lamarjs.routetracker.model.cta.api.bus.BustimeResponse
+import com.lamarjs.routetracker.model.cta.api.common.Route
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Slf4j
-@Service
 class CtaApiRequestService {
 
     RestTemplate restTemplate
 
+    @Autowired
     CtaApiRequestService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate
     }
 
-    BustimeResponse sendGetRequest(URI uri) {
-        ResponseEntity<BustimeApiResponseWrapper> responseEntity = restTemplate.getForEntity(uri, BustimeApiResponseWrapper)
+    ResponseEntity<BustimeResponse> sendGetRequest(URI uri) {
 
-        log.info("CTA Bustime API request returned status code: ${responseEntity.getStatusCodeValue()}")
+        ResponseEntity<BustimeResponse> responseEntity
+        responseEntity = restTemplate.exchange(uri, HttpMethod.GET, null, BustimeResponse)
 
-        BustimeResponse response = responseEntity.getBody().getBustimeResponse()
-        reportErrors(response)
-
-        return response
-
+        return responseEntity
     }
 
     void reportErrors(BustimeResponse response) throws Exception {

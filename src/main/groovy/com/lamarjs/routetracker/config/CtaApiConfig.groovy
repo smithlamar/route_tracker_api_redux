@@ -5,6 +5,7 @@ import com.lamarjs.routetracker.service.CtaRouteAssembler
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
@@ -29,6 +30,12 @@ class CtaApiConfig {
     }
 
     @Bean
+    RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+        return restTemplateBuilder.build()
+    }
+
+    @Bean
+    @Scope(scopeName = SCOPE_PROTOTYPE)
     CtaApiUriBuilder ctaApiUriBuilder(
             @Qualifier("bustimeRoutesUriBuilder") UriComponentsBuilder routesUriBuilder,
             @Qualifier("bustimeDirectionsUriBuilder") UriComponentsBuilder directionsUriBuilder,
@@ -37,12 +44,7 @@ class CtaApiConfig {
             @Qualifier("defaultPredictionLimit") int defaultPredictionLimit) {
 
         return new CtaApiUriBuilder(routesUriBuilder, directionsUriBuilder, stopsUriBuilder, predictionsUriBuilder,
-                                    defaultPredictionLimit)
-    }
-
-    @Bean
-    RestTemplate restTemplate() {
-        return new RestTemplate()
+                defaultPredictionLimit)
     }
 
     @Bean
@@ -58,16 +60,16 @@ class CtaApiConfig {
     @Bean
     @Scope(scopeName = SCOPE_PROTOTYPE)
     UriComponentsBuilder bustimeBaseUri(@Value("\${bus.api.url.scheme}") String scheme,
-            @Value("\${bus.api.url.host}") String host,
-            @Value("\${bus.api.url.path.base}") String basePath,
-            @Value("\${bus.api.url.query-name.key}") String queryNameKey,
-            @Qualifier("busApiKey") String busApikey,
-            @Value("\${bus.api.url.query-name.response-format}") String queryNameResponseFormat,
-            @Value("\${bus.api.response.format}") String format) {
+                                        @Value("\${bus.api.url.host}") String host,
+                                        @Value("\${bus.api.url.path.base}") String basePath,
+                                        @Value("\${bus.api.url.query-name.key}") String queryNameKey,
+                                        @Qualifier("busApiKey") String busApikey,
+                                        @Value("\${bus.api.url.query-name.response-format}") String queryNameResponseFormat,
+                                        @Value("\${bus.api.response.format}") String format) {
 
         return UriComponentsBuilder.newInstance().scheme(scheme).host(host).path(basePath).
                 queryParam(queryNameKey, busApikey)
-                                   .queryParam(queryNameResponseFormat, format)
+                .queryParam(queryNameResponseFormat, format)
     }
 
     @Bean

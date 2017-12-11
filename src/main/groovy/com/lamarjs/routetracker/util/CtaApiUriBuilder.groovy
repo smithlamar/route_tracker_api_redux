@@ -1,10 +1,10 @@
 package com.lamarjs.routetracker.util
 
 import com.lamarjs.routetracker.model.cta.api.common.Direction
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 
-@Service
 class CtaApiUriBuilder {
 
     private UriComponentsBuilder routesUriBuilder
@@ -13,6 +13,7 @@ class CtaApiUriBuilder {
     private UriComponentsBuilder predictionsUriBuilder
     int defaultPredictionLimit
 
+    @Autowired
     CtaApiUriBuilder(
             UriComponentsBuilder routesUriBuilder, UriComponentsBuilder directionsUriBuilder,
             UriComponentsBuilder stopsUriBuilder, UriComponentsBuilder predictionsUriBuilder,
@@ -24,7 +25,7 @@ class CtaApiUriBuilder {
         this.defaultPredictionLimit = defaultPredictionLimit
     }
 
-    static URI build(UriComponentsBuilder builder, List<Object> parameters) {
+    private static URI build(UriComponentsBuilder builder, List<Object> parameters) {
         builder.buildAndExpand(parameters.toArray()).encode().toUri()
     }
 

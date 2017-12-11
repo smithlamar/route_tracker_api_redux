@@ -1,9 +1,12 @@
 package com.lamarjs.routetracker.model.cta.api.common
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.lamarjs.routetracker.model.cta.api.CtaEntity
+import groovy.transform.ToString
 
-class Prediction implements CtaEntity {
+@ToString(includeNames = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
+class Prediction {
     @JsonProperty(value = "tmstmp")
     String createdTimestamp;  // Ex: "20170314 11:25"
     @JsonProperty(value = "stpnm")

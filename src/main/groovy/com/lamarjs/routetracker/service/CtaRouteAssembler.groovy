@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Slf4j
-@Service
 class CtaRouteAssembler {
 
     CtaApiRequestService ctaApiRequestService
     CtaApiUriBuilder ctaApiUriBuilder
 
+    @Autowired
     CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, CtaApiUriBuilder ctaApiUriBuilder) {
         this.ctaApiRequestService = ctaApiRequestService
         this.ctaApiUriBuilder = ctaApiUriBuilder
@@ -24,7 +24,7 @@ class CtaRouteAssembler {
 
         List<Route> routes = ctaApiRequestService.sendGetRequest(ctaApiUriBuilder.buildRoutesUri()).getRoutes()
 
-        println("Route id is ${routes.get(0)}")
+        log.debug("Route id is ${routes.get(0).getRouteId()}")
 
         routes.forEach({ route ->
 
