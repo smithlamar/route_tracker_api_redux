@@ -1,4 +1,4 @@
-package com.lamarjs.routetracker.model.cta.api.bus
+package com.lamarjs.routetracker.data.cta.api.bus
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.BaseSpecification

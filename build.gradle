@@ -35,7 +35,7 @@ dependencies {
 
 	compile("com.fasterxml.jackson.core:jackson-databind")
 	compile('org.codehaus.groovy:groovy-all')
-	runtime('org.hsqldb:hsqldb')
+	compile("com.h2database:h2")
 	runtime('org.springframework.boot:spring-boot-devtools')
 
 	compileOnly('org.projectlombok:lombok')

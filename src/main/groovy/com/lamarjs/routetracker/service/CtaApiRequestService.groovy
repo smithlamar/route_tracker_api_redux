@@ -2,11 +2,11 @@ package com.lamarjs.routetracker.service
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.lamarjs.routetracker.model.cta.api.bus.BustimeResponse
-import com.lamarjs.routetracker.model.cta.api.common.Direction
-import com.lamarjs.routetracker.model.cta.api.common.Prediction
-import com.lamarjs.routetracker.model.cta.api.common.Route
-import com.lamarjs.routetracker.model.cta.api.common.Stop
+import com.lamarjs.routetracker.data.cta.api.bus.BustimeResponse
+import com.lamarjs.routetracker.data.cta.api.common.Direction
+import com.lamarjs.routetracker.data.cta.api.common.Prediction
+import com.lamarjs.routetracker.data.cta.api.common.Route
+import com.lamarjs.routetracker.data.cta.api.common.Stop
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
