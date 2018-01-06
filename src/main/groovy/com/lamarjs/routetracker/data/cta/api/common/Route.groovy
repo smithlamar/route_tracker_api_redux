@@ -10,7 +10,7 @@ import java.time.LocalDate
 
 @Entity
 @ToString(includeNames = true)
-class Route {
+class Route implements Serializable {
     @Id
     @JsonProperty(value = "rt")
     String routeId

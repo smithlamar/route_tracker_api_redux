@@ -1,5 +1,6 @@
 package com.lamarjs.routetracker.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.data.cta.api.common.Direction
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
@@ -21,6 +22,20 @@ class CtaRouteAssembler {
 
     List<Route> initializeRoutes() {
 
+        if (savedRoutesFileIsStale()) {
+
+            List<Route> initializedRoutes = new ArrayList<>()
+            initializedRoutes = getRoutesFromCtaApi()
+            saveRoutesToFile(initializedRoutes)
+            return initializedRoutes
+
+        }
+
+        return loadRoutesFromFile()
+    }
+
+    List<Route> getRoutesFromCtaApi() {
+
         List<Route> routes = ctaApiRequestService.getRoutes()
 
         log.debug("Route id is ${routes.get(0).getRouteId()}")
@@ -38,5 +53,15 @@ class CtaRouteAssembler {
         })
 
         return routes
+    }
+
+    static private List<Route> loadRoutesFromFile() {
+        null
+    }
+
+    static private void saveRoutesToFile(List<Route> routes) {}
+
+    static private boolean savedRoutesFileIsStale() {
+        return true
     }
 }

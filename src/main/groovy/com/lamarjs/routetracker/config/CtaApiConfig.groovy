@@ -2,6 +2,7 @@ package com.lamarjs.routetracker.config
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
 import com.lamarjs.routetracker.service.CtaApiRequestService
 import com.lamarjs.routetracker.service.CtaRouteAssembler
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
@@ -22,6 +23,11 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @PropertySource("classpath:cta-api.properties")
 @Configuration
 class CtaApiConfig {
+
+    @Bean
+    SavedRoutesFileManager(@Qualifier("objectMapper") ObjectMapper objectMapper) {
+        return new SavedRoutesFileManager(objectMapper)
+    }
 
     @Bean
     CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService) {
@@ -66,6 +72,11 @@ class CtaApiConfig {
     @Bean
     String busApiKey(@Value("\${bus.api.key}") String key) {
         return key
+    }
+
+    @Bean
+    String savedRoutesFilePath(@Value("\${persistence.routes.file.path}") String path) {
+        return path
     }
 
     @Bean

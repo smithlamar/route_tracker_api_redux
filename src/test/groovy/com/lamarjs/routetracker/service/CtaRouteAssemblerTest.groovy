@@ -16,4 +16,8 @@ class CtaRouteAssemblerTest extends Specification {
 //        routes
 //        routes.size() > 0
     }
+
+    def "should load routes from file"() {
+
+    }
 }
