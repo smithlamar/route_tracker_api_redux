@@ -4,26 +4,28 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import org.springframework.beans.factory.annotation.Autowired
 
-import java.nio.file.Path
-
 class SavedRoutesFileManager {
 
     ObjectMapper objectMapper
-    String routesFilePath
+    String routesJsonFilePath
 
     @Autowired
-    SavedRoutesFileManager(ObjectMapper objectMapper, String routesFilePath) {
+    SavedRoutesFileManager(ObjectMapper objectMapper, String routesJsonFilePath) {
         this.objectMapper = objectMapper
-        this.routesFilePath = routesFilePath
+        this.routesJsonFilePath = routesJsonFilePath
     }
+
+    static List<Route> loadRoutes() {}
+
+    static void saveRoutes(List<Route> routes) {}
 
     static List<Route> loadRoutesFromFile(String path) {
         null
     }
 
-    static public void saveRoutesToFile(List<Route> routes, String path) {}
+    static void saveRoutesToFile(List<Route> routes, String path) {}
 
-    static public boolean savedRoutesFileIsStale(String path) {
+    static boolean savedRoutesFileIsStale(String path) {
         return true
     }
 }

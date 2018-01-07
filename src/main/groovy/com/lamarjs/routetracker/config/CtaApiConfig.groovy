@@ -25,8 +25,10 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 class CtaApiConfig {
 
     @Bean
-    SavedRoutesFileManager(@Qualifier("objectMapper") ObjectMapper objectMapper) {
-        return new SavedRoutesFileManager(objectMapper)
+    SavedRoutesFileManager(
+            @Qualifier("objectMapper") ObjectMapper objectMapper,
+            @Qualifier("savedRoutesJsonFilePath") String savedRoutesJsonFilePath) {
+        return new SavedRoutesFileManager(objectMapper, savedRoutesJsonFilePath)
     }
 
     @Bean
@@ -75,7 +77,7 @@ class CtaApiConfig {
     }
 
     @Bean
-    String savedRoutesFilePath(@Value("\${persistence.routes.file.path}") String path) {
+    String savedRoutesJsonFilePath(@Value("\${persistence.routes.json.file.path}") String path) {
         return path
     }
 

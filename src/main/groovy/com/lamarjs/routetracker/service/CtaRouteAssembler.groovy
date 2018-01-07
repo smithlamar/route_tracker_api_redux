@@ -12,7 +12,6 @@ import org.springframework.data.repository.CrudRepository
 class CtaRouteAssembler {
 
     CtaApiRequestService ctaApiRequestService
-    CrudRepository<Route, String> routeRepository
     Map<String, Route> assembledRoutes
 
     @Autowired
@@ -44,11 +43,14 @@ class CtaRouteAssembler {
 
             List<Direction> directions = ctaApiRequestService.getDirections(route.getRouteId())
 
-            route.setStops(new LinkedHashMap<Direction, List<Stop>>(100))
+            route.setStops(new ArrayList<Stop>())
             directions.forEach({ direction ->
 
                 List<Stop> stops = ctaApiRequestService.getStops(route.getRouteId(), direction)
-                route.getStops().put(direction, stops)
+                stops.forEach({stop ->
+                    stop.setDirection(direction)
+                })
+                route.getStops().addAll(stops)
             })
         })
 

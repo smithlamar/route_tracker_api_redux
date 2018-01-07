@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.transform.ToString
 
+import javax.persistence.Embeddable
+import javax.persistence.Entity
+
+@Embeddable
 class Direction {
 
     static final String NORTHBOUND = "Northbound", SOUTHBOUND = "Southbound", EASTBOUND = "Eastbound",
