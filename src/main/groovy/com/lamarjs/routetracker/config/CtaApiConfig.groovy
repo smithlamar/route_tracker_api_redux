@@ -2,6 +2,7 @@ package com.lamarjs.routetracker.config
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
 import com.lamarjs.routetracker.service.CtaApiRequestService
 import com.lamarjs.routetracker.service.CtaRouteAssembler
