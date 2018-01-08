@@ -1,17 +1,17 @@
 package com.lamarjs.routetracker.util
 
-import com.lamarjs.routetracker.config.CtaApiConfig
-import com.lamarjs.routetracker.model.common.Direction
+import com.lamarjs.routetracker.data.cta.api.common.Direction
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Specification
 
-@ContextConfiguration(classes = [CtaApiConfig])
+@SpringBootTest
+//@ContextConfiguration(classes = [CtaApiConfig])
 class CtaApiUriBuilderTest extends Specification {
 
     static final String TEST_ROUTE_CODE = 4
-    static final Direction TEST_DIRECTION = Direction.NORTHBOUND
+    static final Direction TEST_DIRECTION = new Direction(direction: "Northbound")
     static final String TEST_STOP_ID = 1584
     static final int TEST_RESULTS_LIMIT = 3
 
