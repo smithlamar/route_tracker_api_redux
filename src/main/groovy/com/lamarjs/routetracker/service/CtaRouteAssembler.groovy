@@ -1,53 +1,70 @@
 package com.lamarjs.routetracker.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.data.cta.api.common.Direction
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
+import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.repository.CrudRepository
+
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @Slf4j
 class CtaRouteAssembler {
 
     CtaApiRequestService ctaApiRequestService
+    SavedRoutesFileManager savedRoutesFileManager
     Map<String, Route> assembledRoutes
 
     @Autowired
-    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService) {
+    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, SavedRoutesFileManager savedRoutesFileManager) {
         this.ctaApiRequestService = ctaApiRequestService
+        this.savedRoutesFileManager = savedRoutesFileManager
     }
 
     List<Route> initializeRoutes() {
 
-        if (savedRoutesFileIsStale()) {
+        List<Route> initializedRoutes = new ArrayList<>()
 
-            List<Route> initializedRoutes = new ArrayList<>()
-            initializedRoutes = getRoutesFromCtaApi()
-            saveRoutesToFile(initializedRoutes)
-            return initializedRoutes
+        if (savedRoutesFileManager.savedRoutesFileIsStale()) {
+            initializedRoutes = loadRoutesFromCtaApi()
+            savedRoutesFileManager.saveRoutes(initializedRoutes)
+        } else {
+            initializedRoutes = savedRoutesFileManager.loadRoutes()
+            Long routeCreationTime = initializedRoutes.get(0).getCreatedDateInEpochSeconds()
 
+            if (SavedRoutesFileManager.isOlderThanSevenDays(routeCreationTime)) {
+                initializedRoutes = loadRoutesFromCtaApi()
+                savedRoutesFileManager.saveRoutes(initializedRoutes)
+            }
         }
 
-        return loadRoutesFromFile()
+        assembledRoutes = buildRoutesMap(initializedRoutes)
+        return initializedRoutes
     }
 
-    List<Route> getRoutesFromCtaApi() {
+    private static Map<String, Route> buildRoutesMap(List<Route> routes) {
+        Map<String, Route> routesMap = new HashMap<>()
+        routes.forEach({ route ->
+            routesMap.put(route.routeId, route)
+        })
+        return routesMap
+    }
+
+    List<Route> loadRoutesFromCtaApi() {
 
         List<Route> routes = ctaApiRequestService.getRoutes()
 
-        log.debug("Route id is ${routes.get(0).getRouteId()}")
-
-        routes.forEach({ route ->
-
+        routes.parallelStream().forEach({ route ->
+            route.setCreatedDateInEpochSeconds(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
             List<Direction> directions = ctaApiRequestService.getDirections(route.getRouteId())
 
             route.setStops(new ArrayList<Stop>())
-            directions.forEach({ direction ->
+            directions.parallelStream().forEach({ direction ->
 
                 List<Stop> stops = ctaApiRequestService.getStops(route.getRouteId(), direction)
-                stops.forEach({stop ->
+                stops.parallelStream().forEach({ stop ->
                     stop.setDirection(direction)
                 })
                 route.getStops().addAll(stops)
@@ -55,15 +72,5 @@ class CtaRouteAssembler {
         })
 
         return routes
-    }
-
-    static private List<Route> loadRoutesFromFile() {
-        null
-    }
-
-    static private void saveRoutesToFile(List<Route> routes) {}
-
-    static private boolean savedRoutesFileIsStale() {
-        return true
     }
 }
