@@ -26,16 +26,6 @@ class SavedRoutesFileManagerTest extends BaseSpecification {
         new File(testFilePath).delete()
     }
 
-    def "saveRoutesCreatesAppropriateFileStructure"() {
-        File savedRoutesJsonPath = new File(savedRoutesFileManager.routesJsonFilePath)
-        savedRoutesJsonPath.delete()
-
-        savedRoutesFileManager.saveRoutes(testRoutes)
-
-        expect:
-        savedRoutesJsonPath.exists()
-    }
-
     def "LoadRoutesFromFileReturnsSavedFileWithCorrectValues"() {
         savedRoutesFileManager.saveRoutesToFile(testRoutes, testFilePath)
         List<Route> loadedRoutes = savedRoutesFileManager.loadRoutesFromFile(testFilePath)

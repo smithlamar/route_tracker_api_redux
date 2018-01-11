@@ -1,10 +1,9 @@
 package com.lamarjs.routetracker.data.cta.api.common
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.transform.ToString
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ToString(includeNames = true)
 class Route {
@@ -15,15 +14,5 @@ class Route {
     @JsonProperty(value = "rtclr")
     String routeColor
     List<Stop> stops
-    LocalDate createdDate
-
-//    @JsonIgnore(value = true) // Ignored for deserialization
-//    void setStops(List<Stop> stops) {
-//        this.stops = stops
-//    }
-//
-//    @JsonIgnore(value = true)
-//    void setCreatedDate(LocalDate createdDate) {
-//        this.createdDate = createdDate
-//    }
+    Long createdDateInEpochSeconds
 }

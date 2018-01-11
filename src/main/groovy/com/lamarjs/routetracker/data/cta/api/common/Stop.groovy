@@ -1,6 +1,5 @@
 package com.lamarjs.routetracker.data.cta.api.common
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.transform.ToString
 
@@ -15,9 +14,4 @@ class Stop {
     @JsonProperty(value = "lon")
     double longitude;
     Direction direction
-
-//    @JsonIgnore(value = true) // ignored for deserialization
-//    void setDirection(Direction direction) {
-//        this.direction = direction
-//    }
 }

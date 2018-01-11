@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 
 @Slf4j
@@ -58,6 +59,7 @@ class SavedRoutesFileManager {
         }
 
         tempFile.renameTo(outputFile)
+        outputFile.setLastModified(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
         log.info("Wrote routes to file: ${outputFile}")
     }
 

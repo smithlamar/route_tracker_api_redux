@@ -7,7 +7,8 @@ import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 
-import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @Slf4j
 class CtaRouteAssembler {
@@ -31,6 +32,12 @@ class CtaRouteAssembler {
             savedRoutesFileManager.saveRoutes(initializedRoutes)
         } else {
             initializedRoutes = savedRoutesFileManager.loadRoutes()
+            Long routeCreationTime = initializedRoutes.get(0).getCreatedDateInEpochSeconds()
+
+            if (SavedRoutesFileManager.isOlderThanSevenDays(routeCreationTime)) {
+                initializedRoutes = loadRoutesFromCtaApi()
+                savedRoutesFileManager.saveRoutes(initializedRoutes)
+            }
         }
 
         assembledRoutes = buildRoutesMap(initializedRoutes)
@@ -50,7 +57,7 @@ class CtaRouteAssembler {
         List<Route> routes = ctaApiRequestService.getRoutes()
 
         routes.parallelStream().forEach({ route ->
-            route.setCreatedDate(LocalDate.now())
+            route.setCreatedDateInEpochSeconds(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
             List<Direction> directions = ctaApiRequestService.getDirections(route.getRouteId())
 
             route.setStops(new ArrayList<Stop>())
