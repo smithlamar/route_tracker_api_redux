@@ -42,7 +42,7 @@ class SavedRoutesFileManager {
     void saveRoutesToFile(List<Route> routes, String path) {
         File outputFile = new File(path)
         File parentDirectory = new File(outputFile.getParent())
-        Files.createDirectory(parentDirectory.toPath())
+        parentDirectory.mkdir()
 
         File tempFile = new File(parentDirectory.toString() + "/temp_" + outputFile.getName())
         tempFile.createNewFile()
@@ -66,6 +66,6 @@ class SavedRoutesFileManager {
 
     static boolean fileIsStale(String path) {
         File file = new File(path)
-        return file.lastModified() < LocalDate.now().minusDays(7).toEpochDay()
+        return !file.exists() || file.lastModified() < LocalDate.now().minusDays(7).toEpochDay()
     }
 }

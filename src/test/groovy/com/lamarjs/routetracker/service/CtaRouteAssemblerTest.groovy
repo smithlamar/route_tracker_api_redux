@@ -4,11 +4,8 @@ import com.lamarjs.routetracker.BaseSpecification
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.test.context.SpringBootTest
-import spock.lang.Specification
+import spock.lang.Ignore
 
-@SpringBootTest
 class CtaRouteAssemblerTest extends BaseSpecification {
 
     @Autowired
@@ -26,14 +23,24 @@ class CtaRouteAssemblerTest extends BaseSpecification {
         routes.size() > 0
     }
 
+    @Ignore
+    def "should initialize routes from cta api request service"() {
+        List<Route> routes = ctaRouteAssembler.loadRoutesFromCtaApi()
+
+        expect:
+        routes
+        routes.size() > 100
+    }
+
+    @Ignore
     def "should load routes from file"() {
         savedRoutesFileManager.saveRoutesToFile(testRoutes, savedRoutesFileManager.routesJsonFilePath)
 
         List<Route> actualRoutes = ctaRouteAssembler.initializeRoutes()
-
+        new File(savedRoutesFileManager.routesJsonFilePath).delete()
         expect:
-        actualRoutes == testRoutes
-        ctaRouteAssembler.getAssembledRoutes() > 0
-        ctaRouteAssembler.getAssembledRoutes().get(testRoutes.routeId)
+        actualRoutes.toString() == testRoutes.toString()
+        ctaRouteAssembler.getAssembledRoutes().size() > 0
+        ctaRouteAssembler.getAssembledRoutes().get(testRoutes.get(0).getRouteId())
     }
 }
