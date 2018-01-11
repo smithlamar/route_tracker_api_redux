@@ -1,15 +1,15 @@
 package com.lamarjs.routetracker.persistence
 
 import com.lamarjs.routetracker.BaseSpecification
-import com.lamarjs.routetracker.data.cta.api.common.Direction
 import com.lamarjs.routetracker.data.cta.api.common.Route
-import com.lamarjs.routetracker.data.cta.api.common.Stop
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Shared
 
 import java.nio.file.Files
 import java.nio.file.attribute.FileTime
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class SavedRoutesFileManagerTest extends BaseSpecification {
 
@@ -53,13 +53,21 @@ class SavedRoutesFileManagerTest extends BaseSpecification {
         testFile.length() > 0
     }
 
-    def "SavedRoutesFileIsStale"() {
+    def "testSavedRoutesFileIsStale"() {
         savedRoutesFileManager.saveRoutesToFile(testRoutes, testFilePath)
         File testFile = new File(testFilePath)
         long thirtySecsAsMilli = 1000L * 30
-        Files.setLastModifiedTime(testFile.toPath(), FileTime.fromMillis((LocalDate.now().minusDays(8).toEpochDay())))
 
-        expect:
+        when:
+        Files.setLastModifiedTime(testFile.toPath(), FileTime.fromMillis(LocalDateTime.now().minusDays(8).toEpochSecond(ZoneOffset.UTC)))
+
+        then:
         SavedRoutesFileManager.fileIsStale(testFilePath)
+
+        when:
+        Files.setLastModifiedTime(testFile.toPath(), FileTime.fromMillis(LocalDateTime.now().minusDays(6).toEpochSecond(ZoneOffset.UTC)))
+
+        then:
+        !SavedRoutesFileManager.fileIsStale(testFilePath)
     }
 }
