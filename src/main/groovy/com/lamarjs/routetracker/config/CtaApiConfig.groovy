@@ -3,6 +3,7 @@ package com.lamarjs.routetracker.config
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.lamarjs.routetracker.controller.RouteTrackerApiController
 import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
 import com.lamarjs.routetracker.service.CtaApiRequestService
 import com.lamarjs.routetracker.service.CtaRouteAssembler
@@ -27,8 +28,15 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 class CtaApiConfig {
 
     @Bean
+    RouteTrackerApiController routeTrackerApiController(CtaRouteAssembler ctaRouteAssembler, CtaApiRequestService ctaApiRequestService) {
+        return new RouteTrackerApiController(ctaRouteAssembler, ctaApiRequestService)
+    }
+
+    @Bean
     CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService, SavedRoutesFileManager savedRoutesFileManager) {
-        return new CtaRouteAssembler(ctaApiRequestService, savedRoutesFileManager)
+        CtaRouteAssembler ctaRouteAssembler = new CtaRouteAssembler(ctaApiRequestService, savedRoutesFileManager)
+        ctaRouteAssembler.initializeRoutes()
+        return ctaRouteAssembler
     }
 
     @Bean
