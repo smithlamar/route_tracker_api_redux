@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Scope
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import static com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_ROOT_VALUE
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE
@@ -26,15 +27,15 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 class CtaApiConfig {
 
     @Bean
-    SavedRoutesFileManager(
-            @Qualifier("objectMapper") ObjectMapper objectMapper,
-            @Qualifier("savedRoutesJsonFilePath") String savedRoutesJsonFilePath) {
-        return new SavedRoutesFileManager(objectMapper, savedRoutesJsonFilePath)
+    CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService, SavedRoutesFileManager savedRoutesFileManager) {
+        return new CtaRouteAssembler(ctaApiRequestService, savedRoutesFileManager)
     }
 
     @Bean
-    CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService) {
-        return new CtaRouteAssembler(ctaApiRequestService)
+    SavedRoutesFileManager savedRoutesFileManager(
+            @Qualifier("objectMapper") ObjectMapper objectMapper,
+            @Qualifier("savedRoutesJsonFilePath") String savedRoutesJsonFilePath) {
+        return new SavedRoutesFileManager(objectMapper, savedRoutesJsonFilePath)
     }
 
     @Bean
@@ -45,7 +46,7 @@ class CtaApiConfig {
 
     @Bean
     ObjectMapper objectMapper() {
-        return new ObjectMapper()
+        return new ObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false).configure(FAIL_ON_MISSING_CREATOR_PROPERTIES, false)
     }
 
 

@@ -6,22 +6,18 @@ import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Shared
-import spock.lang.Specification
+
+import java.nio.file.Files
+import java.nio.file.attribute.FileTime
+import java.time.LocalDate
 
 class SavedRoutesFileManagerTest extends BaseSpecification {
 
     @Shared
-    List<Route> testRoutes
     String testFilePath = "./testRoutesFile.json"
 
     @Autowired
     SavedRoutesFileManager savedRoutesFileManager
-
-    void setupSpec() {
-        testRoutes = new ArrayList<>()
-        List<Stop> testStops = new ArrayList<>([new Stop(stopId: 1, stopName: "testStop", direction: new Direction(direction: Direction.NORTHBOUND))])
-        testRoutes.add(new Route(routeId: 1, routeName: "test", stops: testStops))
-    }
 
     void setup() {
     }
@@ -30,26 +26,40 @@ class SavedRoutesFileManagerTest extends BaseSpecification {
         new File(testFilePath).delete()
     }
 
-    def "LoadRoutes"() {
+    def "saveRoutesCreatesAppropriateFileStructure"() {
+        File savedRoutesJsonPath = new File(savedRoutesFileManager.routesJsonFilePath)
+        savedRoutesJsonPath.delete()
+
+        savedRoutesFileManager.saveRoutes(testRoutes)
+
+        expect:
+        savedRoutesJsonPath.exists()
     }
 
-    def "SaveRoutes"() {
+    def "LoadRoutesFromFileReturnsSavedFileWithCorrectValues"() {
+        savedRoutesFileManager.saveRoutesToFile(testRoutes, testFilePath)
+        List<Route> loadedRoutes = savedRoutesFileManager.loadRoutesFromFile(testFilePath)
+
+        expect:
+        loadedRoutes.toString() == testRoutes.toString()
     }
 
-    def "LoadRoutesFromFile"() {
-
-    }
-
-    def "SaveRoutesToFile"() {
+    def "SaveRoutesToFileProducesFile"() {
         savedRoutesFileManager.saveRoutesToFile(testRoutes, testFilePath)
         File testFile = new File(testFilePath)
 
         expect:
         testFile.exists()
         testFile.length() > 0
-        println(testFile.getText())
     }
 
     def "SavedRoutesFileIsStale"() {
+        savedRoutesFileManager.saveRoutesToFile(testRoutes, testFilePath)
+        File testFile = new File(testFilePath)
+        long thirtySecsAsMilli = 1000L * 30
+        Files.setLastModifiedTime(testFile.toPath(), FileTime.fromMillis((LocalDate.now().minusDays(8).toEpochDay())))
+
+        expect:
+        SavedRoutesFileManager.fileIsStale(testFilePath)
     }
 }

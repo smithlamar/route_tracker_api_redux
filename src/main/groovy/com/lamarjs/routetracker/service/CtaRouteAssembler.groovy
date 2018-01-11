@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.data.cta.api.common.Direction
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
+import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.CrudRepository
@@ -12,25 +13,34 @@ import org.springframework.data.repository.CrudRepository
 class CtaRouteAssembler {
 
     CtaApiRequestService ctaApiRequestService
+    SavedRoutesFileManager savedRoutesFileManager
     Map<String, Route> assembledRoutes
 
     @Autowired
-    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService) {
+    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, SavedRoutesFileManager savedRoutesFileManager) {
         this.ctaApiRequestService = ctaApiRequestService
     }
 
     List<Route> initializeRoutes() {
 
-        if (savedRoutesFileIsStale()) {
+        if (savedRoutesFileManager.savedRoutesFileIsStale()) {
 
-            List<Route> initializedRoutes = new ArrayList<>()
+            List<Route> initializedRoutes
             initializedRoutes = getRoutesFromCtaApi()
-            saveRoutesToFile(initializedRoutes)
-            return initializedRoutes
 
+            savedRoutesFileManager.saveRoutes(initializedRoutes)
+            buildRoutesMap(initializedRoutes)
+
+            return initializedRoutes
         }
 
-        return loadRoutesFromFile()
+        return savedRoutesFileManager.loadRoutes()
+    }
+
+    private void buildRoutesMap(List<Route> routes) {
+        routes.forEach({route ->
+            assembledRoutes.put(route.routeId, route)
+        })
     }
 
     List<Route> getRoutesFromCtaApi() {
@@ -55,15 +65,5 @@ class CtaRouteAssembler {
         })
 
         return routes
-    }
-
-    static private List<Route> loadRoutesFromFile() {
-        null
-    }
-
-    static private void saveRoutesToFile(List<Route> routes) {}
-
-    static private boolean savedRoutesFileIsStale() {
-        return true
     }
 }
