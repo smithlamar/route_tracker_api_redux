@@ -65,7 +65,7 @@ class CtaRouteAssembler {
 
                 List<Stop> stops = ctaApiRequestService.getStops(route.getRouteId(), direction)
                 stops.parallelStream().forEach({ stop ->
-                    stop.setDirection(direction)
+                    stop.setDirection(direction.toString())
                 })
                 route.getStops().addAll(stops)
             })

@@ -13,5 +13,5 @@ class Stop {
     double latitude;
     @JsonProperty(value = "lon")
     double longitude;
-    Direction direction
+    String direction
 }
