@@ -8,6 +8,7 @@ import com.lamarjs.routetracker.data.cta.api.common.Prediction
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
+import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
@@ -93,8 +94,22 @@ class CtaApiRequestService {
     private static void reportErrors(BustimeResponse response) throws Exception {
 
         if (response.hasErrors()) {
+
+            String ctaErrorJson = JsonOutput.toJson(response.getErrors()).toString()
             log.error("Get request resulted in ${response.getErrors().size()} error(s)")
-            throw new Exception(response.getErrorMessages().toListString())
+            log.error(ctaErrorJson)
+
+            throw new Exception(ctaErrorJson)
+        }
+    }
+
+    static enum CtaErrorMessageConstants {
+        BAD_PARAM('No data found for parmeter'), NO_SERVICE_SCHEDULED('No service scheduled')
+
+        String message
+
+        CtaErrorMessageConstants(String message) {
+            this.message = message
         }
     }
 }

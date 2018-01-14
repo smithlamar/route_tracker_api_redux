@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class RouteTrackerApiController {
+
     CtaRouteAssembler ctaRouteAssembler
     CtaApiRequestService ctaApiRequestService
 
@@ -45,11 +46,28 @@ class RouteTrackerApiController {
             status = HttpStatus.OK
         }
         catch (Exception ex) {
-            status = HttpStatus.INTERNAL_SERVER_ERROR
-            responseBody = JsonOutput.toJson(ex.getMessage())
+            status = getStatusBasedOnException(ex)
+            // The message is already in Json format
+            responseBody = ex.getMessage()
         }
 
-        return new ResponseEntity<>(responseBody, status)
+        return new ResponseEntity<String>(responseBody, status)
     }
 
+    static HttpStatus getStatusBasedOnException(Exception ex) {
+
+        String message = ex.getMessage().toLowerCase()
+
+        switch (message) {
+
+            case message.contains(CtaApiRequestService.CtaErrorMessageConstants.BAD_PARAM.message):
+                return HttpStatus.BAD_REQUEST
+
+            case message.contains(CtaApiRequestService.CtaErrorMessageConstants.NO_SERVICE_SCHEDULED.message):
+                return HttpStatus.NO_CONTENT
+
+            default:
+                return HttpStatus.INTERNAL_SERVER_ERROR
+        }
+    }
 }
