@@ -7,8 +7,8 @@ import com.lamarjs.routetracker.data.cta.api.common.Direction
 import com.lamarjs.routetracker.data.cta.api.common.Prediction
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
+import com.lamarjs.routetracker.exception.CtaApiException
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
-import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
@@ -95,21 +95,16 @@ class CtaApiRequestService {
 
         if (response.hasErrors()) {
 
-            String ctaErrorJson = JsonOutput.toJson(response.getErrors()).toString()
+            String errorMessages = response.getErrorMessages().toString()
             log.error("Get request resulted in ${response.getErrors().size()} error(s)")
-            log.error(ctaErrorJson)
+            log.error(errorMessages)
 
-            throw new Exception(ctaErrorJson)
+            throw new CtaApiException(response.getErrors(), errorMessages)
         }
     }
 
-    static enum CtaErrorMessageConstants {
-        BAD_PARAM('No data found for parmeter'), NO_SERVICE_SCHEDULED('No service scheduled')
-
-        String message
-
-        CtaErrorMessageConstants(String message) {
-            this.message = message
-        }
+    static class CtaErrorMessageConstants {
+        public static final String BAD_PARAMETER = "No data found for parameter"
+        public static final String NO_SERVICE_SCHEDULED = "No service scheduled"
     }
 }
