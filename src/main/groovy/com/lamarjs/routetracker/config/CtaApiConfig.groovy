@@ -1,10 +1,8 @@
 package com.lamarjs.routetracker.config
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.lamarjs.routetracker.controller.RouteTrackerApiController
-import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
+import com.lamarjs.routetracker.persistence.RouteFileRepository
 import com.lamarjs.routetracker.service.CtaApiRequestService
 import com.lamarjs.routetracker.service.CtaRouteAssembler
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
@@ -20,7 +18,6 @@ import org.springframework.web.util.UriComponentsBuilder
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-import static com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_ROOT_VALUE
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE
 
 @PropertySource("classpath:cta-api.properties")
@@ -33,17 +30,17 @@ class CtaApiConfig {
     }
 
     @Bean
-    CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService, SavedRoutesFileManager savedRoutesFileManager) {
+    CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService, RouteFileRepository savedRoutesFileManager) {
         CtaRouteAssembler ctaRouteAssembler = new CtaRouteAssembler(ctaApiRequestService, savedRoutesFileManager)
         ctaRouteAssembler.initializeRoutes()
         return ctaRouteAssembler
     }
 
     @Bean
-    SavedRoutesFileManager savedRoutesFileManager(
+    RouteFileRepository savedRoutesFileManager(
             @Qualifier("objectMapper") ObjectMapper objectMapper,
             @Qualifier("savedRoutesJsonFilePath") String savedRoutesJsonFilePath) {
-        return new SavedRoutesFileManager(objectMapper, savedRoutesJsonFilePath)
+        return new RouteFileRepository(objectMapper, savedRoutesJsonFilePath)
     }
 
     @Bean

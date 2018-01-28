@@ -7,17 +7,16 @@ import spock.lang.Shared
 
 import java.nio.file.Files
 import java.nio.file.attribute.FileTime
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-class SavedRoutesFileManagerTest extends BaseSpecification {
+class RouteFileRepositoryTest extends BaseSpecification {
 
     @Shared
     String testFilePath = "./testRoutesFile.json"
 
     @Autowired
-    SavedRoutesFileManager savedRoutesFileManager
+    RouteFileRepository savedRoutesFileManager
 
     void setup() {
     }
@@ -52,12 +51,12 @@ class SavedRoutesFileManagerTest extends BaseSpecification {
         Files.setLastModifiedTime(testFile.toPath(), FileTime.fromMillis(LocalDateTime.now().minusDays(8).toEpochSecond(ZoneOffset.UTC)))
 
         then:
-        SavedRoutesFileManager.fileIsStale(testFilePath)
+        RouteFileRepository.fileIsStale(testFilePath)
 
         when:
         Files.setLastModifiedTime(testFile.toPath(), FileTime.fromMillis(LocalDateTime.now().minusDays(6).toEpochSecond(ZoneOffset.UTC)))
 
         then:
-        !SavedRoutesFileManager.fileIsStale(testFilePath)
+        !RouteFileRepository.fileIsStale(testFilePath)
     }
 }

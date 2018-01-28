@@ -2,7 +2,7 @@ package com.lamarjs.routetracker.service
 
 import com.lamarjs.routetracker.BaseSpecification
 import com.lamarjs.routetracker.data.cta.api.common.Route
-import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
+import com.lamarjs.routetracker.persistence.RouteFileRepository
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Ignore
 
@@ -11,7 +11,7 @@ class CtaRouteAssemblerTest extends BaseSpecification {
     @Autowired
     CtaRouteAssembler ctaRouteAssembler
     @Autowired
-    SavedRoutesFileManager savedRoutesFileManager
+    RouteFileRepository savedRoutesFileManager
 
     def "should initialze routes"() {
 

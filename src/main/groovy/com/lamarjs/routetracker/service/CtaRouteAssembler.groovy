@@ -3,7 +3,7 @@ package com.lamarjs.routetracker.service
 import com.lamarjs.routetracker.data.cta.api.common.Direction
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
-import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
+import com.lamarjs.routetracker.persistence.RouteFileRepository
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -14,11 +14,11 @@ import java.time.ZoneOffset
 class CtaRouteAssembler {
 
     CtaApiRequestService ctaApiRequestService
-    SavedRoutesFileManager savedRoutesFileManager
+    RouteFileRepository savedRoutesFileManager
     Map<String, Route> assembledRoutes
 
     @Autowired
-    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, SavedRoutesFileManager savedRoutesFileManager) {
+    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, RouteFileRepository savedRoutesFileManager) {
         this.ctaApiRequestService = ctaApiRequestService
         this.savedRoutesFileManager = savedRoutesFileManager
     }
@@ -31,10 +31,10 @@ class CtaRouteAssembler {
             initializedRoutes = loadRoutesFromCtaApi()
             savedRoutesFileManager.saveRoutes(initializedRoutes)
         } else {
-            initializedRoutes = savedRoutesFileManager.loadRoutes()
+            initializedRoutes = savedRoutesFileManager.getRoutes()
             Long routeCreationTime = initializedRoutes.get(0).getCreatedDateInEpochSeconds()
 
-            if (SavedRoutesFileManager.isOlderThanSevenDays(routeCreationTime)) {
+            if (RouteFileRepository.isOlderThanSevenDays(routeCreationTime)) {
                 initializedRoutes = loadRoutesFromCtaApi()
                 savedRoutesFileManager.saveRoutes(initializedRoutes)
             }

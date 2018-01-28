@@ -9,31 +9,31 @@ import com.lamarjs.routetracker.data.cta.api.common.Route
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 
 @Slf4j
-class SavedRoutesFileManager {
+class RouteFileRepository implements RouteRepository {
     public static final String SAVED_ROUTES_ROOT_NAME = "routes"
     ObjectMapper objectMapper
     String routesJsonFilePath
 
     @Autowired
-    SavedRoutesFileManager(ObjectMapper objectMapper, String routesJsonFilePath) {
+    RouteFileRepository(ObjectMapper objectMapper, String routesJsonFilePath) {
         this.objectMapper = objectMapper
         this.routesJsonFilePath = routesJsonFilePath
     }
 
-    List<Route> loadRoutes() {
+    @Override
+    List<Route> getRoutes() {
         loadRoutesFromFile(routesJsonFilePath)
     }
 
-
+    @Override
     void saveRoutes(List<Route> routes) {
         saveRoutesToFile(routes, routesJsonFilePath)
     }
+
 
     List<Route> loadRoutesFromFile(String pathToJsonFile) {
         ObjectReader reader = objectMapper.readerFor(new TypeReference<List<Route>>() {
@@ -69,7 +69,7 @@ class SavedRoutesFileManager {
 
     static boolean fileIsStale(String path) {
         File file = new File(path)
-        return !file.exists() || isOlderThanSevenDays(file.lastModified())
+        return !file.exists() || PersistenceUtils.isOlderThanSevenDays(file.lastModified())
     }
 
     static boolean isOlderThanSevenDays(Long creationTime) {
