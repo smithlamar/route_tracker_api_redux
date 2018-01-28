@@ -3,9 +3,11 @@ package com.lamarjs.routetracker.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.controller.RouteTrackerApiController
 import com.lamarjs.routetracker.persistence.RouteFileRepository
+import com.lamarjs.routetracker.persistence.RouteRepository
 import com.lamarjs.routetracker.service.CtaApiRequestService
 import com.lamarjs.routetracker.service.CtaRouteAssembler
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 import org.springframework.context.annotation.Scope
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
@@ -23,6 +26,9 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @PropertySource("classpath:cta-api.properties")
 @Configuration
 class CtaApiConfig {
+
+    @Autowired
+    JdbcTemplate jdbcTemplate
 
     @Bean
     RouteTrackerApiController routeTrackerApiController(CtaRouteAssembler ctaRouteAssembler, CtaApiRequestService ctaApiRequestService) {
@@ -37,10 +43,11 @@ class CtaApiConfig {
     }
 
     @Bean
-    RouteFileRepository savedRoutesFileManager(
+    RouteRepository routeFileRepository(
             @Qualifier("objectMapper") ObjectMapper objectMapper,
-            @Qualifier("savedRoutesJsonFilePath") String savedRoutesJsonFilePath) {
-        return new RouteFileRepository(objectMapper, savedRoutesJsonFilePath)
+            @Qualifier("savedRoutesJsonFilePath") String savedRoutesJsonFilePath, JdbcTemplate jdbcTemplate) {
+
+        return new RouteFileRepository(objectMapper, savedRoutesJsonFilePath, jdbcTemplate)
     }
 
     @Bean

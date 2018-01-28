@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.core.JdbcTemplate
 
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -72,7 +73,4 @@ class RouteFileRepository implements RouteRepository {
         return !file.exists() || PersistenceUtils.isOlderThanSevenDays(file.lastModified())
     }
 
-    static boolean isOlderThanSevenDays(Long creationTime) {
-        return creationTime < LocalDateTime.now().minusDays(7).toEpochSecond(ZoneOffset.UTC)
-    }
 }

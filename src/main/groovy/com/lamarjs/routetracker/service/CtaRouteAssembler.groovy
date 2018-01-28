@@ -3,6 +3,7 @@ package com.lamarjs.routetracker.service
 import com.lamarjs.routetracker.data.cta.api.common.Direction
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
+import com.lamarjs.routetracker.persistence.PersistenceUtils
 import com.lamarjs.routetracker.persistence.RouteFileRepository
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,7 +35,7 @@ class CtaRouteAssembler {
             initializedRoutes = savedRoutesFileManager.getRoutes()
             Long routeCreationTime = initializedRoutes.get(0).getCreatedDateInEpochSeconds()
 
-            if (RouteFileRepository.isOlderThanSevenDays(routeCreationTime)) {
+            if (PersistenceUtils.isOlderThanSevenDays(routeCreationTime)) {
                 initializedRoutes = loadRoutesFromCtaApi()
                 savedRoutesFileManager.saveRoutes(initializedRoutes)
             }
