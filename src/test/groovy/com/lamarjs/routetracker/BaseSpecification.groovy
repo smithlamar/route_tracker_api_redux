@@ -1,6 +1,5 @@
 package com.lamarjs.routetracker
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.data.cta.api.common.Direction
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
@@ -9,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-import static com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_ROOT_VALUE
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @SpringBootTest
 class BaseSpecification extends Specification {
@@ -24,7 +23,7 @@ class BaseSpecification extends Specification {
     void setupSpec() {
         testRoutes = new ArrayList<>()
         List<Stop> testStops = new ArrayList<>([new Stop(stopId: 1, stopName: "testStop", latitude: 1.0, longitude: 1.0, direction: new Direction(direction: Direction.NORTHBOUND))])
-        testRoutes.add(new Route(routeId: "1", routeName: "test", routeColor: "000", stops: testStops))
+        testRoutes.add(new Route(routeId: "1", routeName: "test", routeColor: "000", stops: testStops, createdDateInEpochSeconds: LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)))
 
         List<File> jsonSampleUris = new File('src/test/resources/sampledata/bustimeapi/response/json/').listFiles().
                 toList()

@@ -2,6 +2,7 @@ package com.lamarjs.routetracker.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.controller.RouteTrackerApiController
+import com.lamarjs.routetracker.persistence.RouteDatabaseRepository
 import com.lamarjs.routetracker.persistence.RouteFileRepository
 import com.lamarjs.routetracker.persistence.RouteRepository
 import com.lamarjs.routetracker.service.CtaApiRequestService
@@ -36,18 +37,16 @@ class CtaApiConfig {
     }
 
     @Bean
-    CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService, RouteFileRepository savedRoutesFileManager) {
-        CtaRouteAssembler ctaRouteAssembler = new CtaRouteAssembler(ctaApiRequestService, savedRoutesFileManager)
-        ctaRouteAssembler.initializeRoutes()
+    CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService,
+                                        @Qualifier("routeDatabaseRepository") RouteRepository routeDatabaseRepository) {
+        CtaRouteAssembler ctaRouteAssembler = new CtaRouteAssembler(ctaApiRequestService, routeDatabaseRepository)
+//        ctaRouteAssembler.initializeRoutes()
         return ctaRouteAssembler
     }
 
     @Bean
-    RouteRepository routeFileRepository(
-            @Qualifier("objectMapper") ObjectMapper objectMapper,
-            @Qualifier("savedRoutesJsonFilePath") String savedRoutesJsonFilePath, JdbcTemplate jdbcTemplate) {
-
-        return new RouteFileRepository(objectMapper, savedRoutesJsonFilePath, jdbcTemplate)
+    RouteRepository routeDatabaseRepository(JdbcTemplate jdbcTemplate) {
+        return new RouteDatabaseRepository(jdbcTemplate)
     }
 
     @Bean

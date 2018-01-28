@@ -3,14 +3,21 @@ package com.lamarjs.routetracker.persistence
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.core.BatchPreparedStatementSetter
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
+
+import java.sql.PreparedStatement
+import java.sql.SQLException
+import java.sql.Types
+
+import static java.sql.Types.VARCHAR
 
 class RouteDatabaseRepository implements RouteRepository {
 
     String SAVE_ROUTES_SQL = "INSERT INTO routes (routeId, routeName, routeColor, createdDateInEpochSeconds) " +
             "VALUES (?, ?, ?, ?);"
-    String SAVE_STOPS_SQL = "INSERT INTO stops (stopId, stopName, latitude, longitude, direction) " +
+    String SAVE_STOPS_SQL = "MERGE INTO stops (stopId, stopName, latitude, longitude, direction) " +
             "VALUES (?, ?, ?, ?, ?);"
     String SAVE_STOPS_MAP_SQL = "INSERT INTO routes_stops_map (routeId, stopId) VALUES (?, ?)"
 
@@ -18,6 +25,9 @@ class RouteDatabaseRepository implements RouteRepository {
 
     String GET_STOPS_SQL = "SELECT stops.* FROM stops JOIN routes_stops_map AS map ON map.stopId = stops.stopId " +
             "WHERE map.routeId = ?"
+    String TRUNCATE_TABLE_SQL = "TRUNCATE TABLE ?;"
+    String GET_OLDEST_ROUTE_SQL = "SELECT MIN(createdDateInEpochSeconds) FROM routes;"
+
 
     JdbcTemplate jdbcTemplate
 
@@ -34,10 +44,18 @@ class RouteDatabaseRepository implements RouteRepository {
         List<Object[]> saveStopsMapValues = new ArrayList<>()
 
         routes.forEach({ route ->
-            saveRoutesValues.add([route.getRouteId(), route.getRouteName(), route.getRouteColor(), route.getCreatedDateInEpochSeconds()])
+
+            saveRoutesValues.add([route.getRouteId(), route.getRouteName(), route.getRouteColor(),
+                                  route.getCreatedDateInEpochSeconds()].toArray()
+            )
+
             route.getStops().forEach({ stop ->
-                saveStopsValues.add([stop.getStopId(), stop.getStopName(), stop.getLatitude(), stop.getLongitude(), stop.getDirection()])
-                saveStopsMapValues.add([route.routeId, stop.stopId])
+
+                saveStopsValues.add([stop.getStopId(), stop.getStopName(), stop.getLatitude(), stop.getLongitude(),
+                                     stop.getDirection()].toArray()
+                )
+
+                saveStopsMapValues.add([route.routeId, stop.stopId].toArray())
             })
         })
 
@@ -48,10 +66,10 @@ class RouteDatabaseRepository implements RouteRepository {
 
     @Override
     List<Route> getRoutes() {
-        RowMapper<Route> routesRowMapper = { rs, rowNum ->
-            new Route(routeId: rs.getString("routeId"), routeName: rs.getString("routeName"),
-                    routeColor: rs.getString("routeColor"),
-                    createdDateInEpochSeconds: rs.getLong("createdDateInEpochSeconds")
+        RowMapper<Route> routesRowMapper = { resultSet, rowNum ->
+            new Route(routeId: resultSet.getString("routeId"), routeName: resultSet.getString("routeName"),
+                    routeColor: resultSet.getString("routeColor"),
+                    createdDateInEpochSeconds: resultSet.getLong("createdDateInEpochSeconds")
             )
         }
 
@@ -70,5 +88,21 @@ class RouteDatabaseRepository implements RouteRepository {
         })
 
         return routes
+    }
+
+    @Override
+    void deleteRoutes() {
+        ["routes_stops_map", "stops", "routes"].forEach({ tableName ->
+            jdbcTemplate.update(TRUNCATE_TABLE_SQL, tableName)
+        })
+    }
+
+    @Override
+    boolean isStale() {
+        RowMapper<Long> longMapper = { resultSet, numRows ->
+            return numRows > 0 ? resultSet.getLong("createdDateInEpochSeconds") : null
+        }
+        Long oldestRouteDate = jdbcTemplate.query(GET_OLDEST_ROUTE_SQL, longMapper).get(0)
+        return oldestRouteDate == null || PersistenceUtils.isOlderThanSevenDays(oldestRouteDate)
     }
 }

@@ -4,7 +4,7 @@ import com.lamarjs.routetracker.data.cta.api.common.Direction
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
 import com.lamarjs.routetracker.persistence.PersistenceUtils
-import com.lamarjs.routetracker.persistence.RouteFileRepository
+import com.lamarjs.routetracker.persistence.RouteRepository
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -15,30 +15,27 @@ import java.time.ZoneOffset
 class CtaRouteAssembler {
 
     CtaApiRequestService ctaApiRequestService
-    RouteFileRepository savedRoutesFileManager
+    RouteRepository routeRepository
     Map<String, Route> assembledRoutes
 
     @Autowired
-    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, RouteFileRepository savedRoutesFileManager) {
+    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, RouteRepository routeRepository) {
         this.ctaApiRequestService = ctaApiRequestService
-        this.savedRoutesFileManager = savedRoutesFileManager
+        this.routeRepository = routeRepository
     }
 
     List<Route> initializeRoutes() {
 
         List<Route> initializedRoutes = new ArrayList<>()
 
-        if (savedRoutesFileManager.savedRoutesFileIsStale()) {
-            initializedRoutes = loadRoutesFromCtaApi()
-            savedRoutesFileManager.saveRoutes(initializedRoutes)
-        } else {
-            initializedRoutes = savedRoutesFileManager.getRoutes()
-            Long routeCreationTime = initializedRoutes.get(0).getCreatedDateInEpochSeconds()
+        if (!assembledRoutes || routeRepository.isStale()) {
 
-            if (PersistenceUtils.isOlderThanSevenDays(routeCreationTime)) {
-                initializedRoutes = loadRoutesFromCtaApi()
-                savedRoutesFileManager.saveRoutes(initializedRoutes)
-            }
+            log.info("Assembled routes were either stale or non-existent. Initializing from CTA API.")
+            initializedRoutes = loadRoutesFromCtaApi()
+            routeRepository.saveRoutes(initializedRoutes)
+        } else {
+            log.info("Initializing routes from route repository.")
+            initializedRoutes = routeRepository.getRoutes()
         }
 
         assembledRoutes = buildRoutesMap(initializedRoutes)
