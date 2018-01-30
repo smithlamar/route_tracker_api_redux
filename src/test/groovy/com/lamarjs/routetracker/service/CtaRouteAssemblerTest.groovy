@@ -13,6 +13,10 @@ class CtaRouteAssemblerTest extends BaseSpecification {
     @Autowired
     RouteRepository routeRepository
 
+    void cleanup() {
+        routeRepository.deleteRoutes()
+    }
+
     def "should initialze routes"() {
 
         when:
@@ -34,11 +38,10 @@ class CtaRouteAssemblerTest extends BaseSpecification {
 
     def "should load routes from repository"() {
         routeRepository.saveRoutes(testRoutes)
-
         List<Route> actualRoutes = ctaRouteAssembler.initializeRoutes()
         expect:
         actualRoutes.toString() == testRoutes.toString()
-        ctaRouteAssembler.getAssembledRoutes().size() > 0
-        ctaRouteAssembler.getAssembledRoutes().get(testRoutes.get(0).getRouteId())
+        ctaRouteAssembler.getRoutesMap().size() > 0
+        ctaRouteAssembler.getRoutesMap().get(testRoutes.get(0).getRouteId())
     }
 }

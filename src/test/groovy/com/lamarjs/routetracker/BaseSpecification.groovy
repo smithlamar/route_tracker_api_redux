@@ -14,16 +14,13 @@ import java.time.ZoneOffset
 @SpringBootTest
 class BaseSpecification extends Specification {
     @Shared
-    List<Route> testRoutes
-    @Shared
-    Map<String, String> jsonSampleFilesAsStrings
-    @Shared
-    Map<String, Map<String, Object>> jsonSamplesAsMaps
+    static List<Route> testRoutes = new ArrayList<>()
+    static Map<String, String> jsonSampleFilesAsStrings
+    static Map<String, Map<String, Object>> jsonSamplesAsMaps
 
     void setupSpec() {
-        testRoutes = new ArrayList<>()
         List<Stop> testStops = new ArrayList<>([new Stop(stopId: 1, stopName: "testStop", latitude: 1.0, longitude: 1.0, direction: new Direction(direction: Direction.NORTHBOUND))])
-        testRoutes.add(new Route(routeId: "1", routeName: "test", routeColor: "000", stops: testStops, createdDateInEpochSeconds: LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)))
+        testRoutes.add(new Route(routeId: "1", routeName: "test", routeColor: "000000", stops: testStops, createdDateInEpochSeconds: LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)))
 
         List<File> jsonSampleUris = new File('src/test/resources/sampledata/bustimeapi/response/json/').listFiles().
                 toList()

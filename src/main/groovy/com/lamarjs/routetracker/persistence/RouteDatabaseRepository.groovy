@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 
 import java.sql.PreparedStatement
+import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Types
 
@@ -25,7 +26,6 @@ class RouteDatabaseRepository implements RouteRepository {
 
     String GET_STOPS_SQL = "SELECT stops.* FROM stops JOIN routes_stops_map AS map ON map.stopId = stops.stopId " +
             "WHERE map.routeId = ?"
-    String TRUNCATE_TABLE_SQL = "TRUNCATE TABLE ?;"
     String GET_OLDEST_ROUTE_SQL = "SELECT MIN(createdDateInEpochSeconds) FROM routes;"
 
 
@@ -93,14 +93,22 @@ class RouteDatabaseRepository implements RouteRepository {
     @Override
     void deleteRoutes() {
         ["routes_stops_map", "stops", "routes"].forEach({ tableName ->
-            jdbcTemplate.update(TRUNCATE_TABLE_SQL, tableName)
+            jdbcTemplate.update("TRUNCATE TABLE ${tableName}")
         })
     }
 
     @Override
     boolean isStale() {
-        RowMapper<Long> longMapper = { resultSet, numRows ->
-            return numRows > 0 ? resultSet.getLong("createdDateInEpochSeconds") : null
+
+        RowMapper<Long> mapper = new RowMapper<Long>() {
+            @Override
+            Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return null
+            }
+        }
+
+        RowMapper<Long> longMapper = { resultSet, rowNum ->
+            return resultSet?.getLong(1)
         }
         Long oldestRouteDate = jdbcTemplate.query(GET_OLDEST_ROUTE_SQL, longMapper).get(0)
         return oldestRouteDate == null || PersistenceUtils.isOlderThanSevenDays(oldestRouteDate)

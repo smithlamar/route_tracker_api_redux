@@ -3,8 +3,7 @@ CREATE TABLE IF NOT EXISTS routes (
   routeName VARCHAR2(128) NOT NULL,
   routeColor VARCHAR2(7) NOT NULL,
   createdDateInEpochSeconds BIGINT NOT NULL,
-  CONSTRAINT primary_key_routes PRIMARY KEY (routeId, routeName),
-  CONSTRAINT secondary_index_routes UNIQUE (routeName)
+  CONSTRAINT primary_key_routes PRIMARY KEY (routeId, routeName)
 );
 
 CREATE TABLE IF NOT EXISTS stops (
@@ -13,8 +12,7 @@ CREATE TABLE IF NOT EXISTS stops (
   latitude DECIMAL(13, 10) NOT NULL,
   longitude DECIMAL(13, 10) NOT NULL,
   direction VARCHAR2(12) NOT NULL,
-  CONSTRAINT primary_key_stops PRIMARY KEY (stopId),
-  CONSTRAINT secondary_index_stops UNIQUE (stopName)
+  CONSTRAINT primary_key_stops PRIMARY KEY (stopId, stopName)
 );
 
 CREATE TABLE IF NOT EXISTS routes_stops_map (

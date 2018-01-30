@@ -26,7 +26,7 @@ class RouteTrackerApiController {
 
     @RequestMapping(value = "/routes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Route> getRoutes() {
-        return ctaRouteAssembler.getAssembledRoutes().values().toList()
+        return ctaRouteAssembler.getRoutesMap().values().toList()
     }
 
     @RequestMapping(value = "/predictions/{routeId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
