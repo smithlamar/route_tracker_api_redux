@@ -16,11 +16,11 @@ import static java.sql.Types.VARCHAR
 
 class RouteDatabaseRepository implements RouteRepository {
 
-    String SAVE_ROUTES_SQL = "INSERT INTO routes (routeId, routeName, routeColor, createdDateInEpochSeconds) " +
+    String SAVE_ROUTES_SQL = "MERGE INTO routes (routeId, routeName, routeColor, createdDateInEpochSeconds) " +
             "VALUES (?, ?, ?, ?);"
     String SAVE_STOPS_SQL = "MERGE INTO stops (stopId, stopName, latitude, longitude, direction) " +
             "VALUES (?, ?, ?, ?, ?);"
-    String SAVE_STOPS_MAP_SQL = "INSERT INTO routes_stops_map (routeId, stopId) VALUES (?, ?)"
+    String SAVE_STOPS_MAP_SQL = "MERGE INTO routes_stops_map (routeId, stopId) VALUES (?, ?)"
 
     String GET_ROUTES_SQL = "SELECT * FROM routes;"
 

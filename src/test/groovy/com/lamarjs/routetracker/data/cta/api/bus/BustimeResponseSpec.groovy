@@ -16,7 +16,7 @@ class BustimeResponseSpec extends BaseSpecification {
 
         given:
 
-        String jsonString = jsonSampleFilesAsStrings.get(jsonSample)
+        String jsonString = jsonSamplesAsStrings.get(jsonSample)
 
         and: "json sample mapped to BustimeApiResponseWrapper"
         BustimeResponse routesResponse = mapper.readerFor(BustimeResponse).readValue(jsonString)
@@ -25,12 +25,12 @@ class BustimeResponseSpec extends BaseSpecification {
         routesResponse
 
         where:
-        jsonSample << jsonSampleFilesAsStrings.keySet().toList()
+        jsonSample << jsonSamplesAsStrings.keySet().toList()
     }
 
     def "should deserialize #jsonSampleFileUri to have error indicator #hasError"() {
         given: "Sample json"
-        String jsonString = jsonSampleFilesAsStrings.get(jsonSampleFileUri)
+        String jsonString = jsonSamplesAsStrings.get(jsonSampleFileUri)
         Map<String, Object> expectedDeserializedObject = jsonSamplesAsMaps.get(jsonSampleFileUri)
 
         and: "json sample is mapped to bustime response"

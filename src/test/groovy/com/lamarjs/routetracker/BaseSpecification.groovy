@@ -13,25 +13,43 @@ import java.time.ZoneOffset
 
 @SpringBootTest
 class BaseSpecification extends Specification {
+
     @Shared
-    static List<Route> testRoutes = new ArrayList<>()
-    static Map<String, String> jsonSampleFilesAsStrings
-    static Map<String, Map<String, Object>> jsonSamplesAsMaps
+    static List<Route> testRoutes = setupTestRoutes()
+    @Shared
+    static List<File> jsonSampleUris = new File('src/test/resources/sampledata/bustimeapi/response/json/').listFiles().toList()
+    @Shared
+    static Map<String, String> jsonSamplesAsStrings = setupJsonSamplesAsStrings()
+    @Shared
+    static Map<String, Map<String, Object>> jsonSamplesAsMaps = setupJsonSamplesAsMaps()
 
-    void setupSpec() {
+    static List<Route> setupTestRoutes() {
+        List<Route> testRoutes = new ArrayList<>()
         List<Stop> testStops = new ArrayList<>([new Stop(stopId: 1, stopName: "testStop", latitude: 1.0, longitude: 1.0, direction: new Direction(direction: Direction.NORTHBOUND))])
-        testRoutes.add(new Route(routeId: "1", routeName: "test", routeColor: "000000", stops: testStops, createdDateInEpochSeconds: LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)))
+        testRoutes.add new Route(routeId: "1", routeName: "test", routeColor: "000000", stops: testStops, createdDateInEpochSeconds: LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
+        return testRoutes
+    }
 
-        List<File> jsonSampleUris = new File('src/test/resources/sampledata/bustimeapi/response/json/').listFiles().
-                toList()
+    static Map<String, Map<String, Object>> setupJsonSamplesAsMaps() {
 
-        jsonSampleFilesAsStrings = new HashMap<>()
-        jsonSamplesAsMaps = new HashMap<>()
+        Map<String, Map<String, Object>> jsonSamples = new HashMap<>()
         JsonSlurper slurper = new JsonSlurper()
 
         jsonSampleUris.forEach({ file ->
-            jsonSampleFilesAsStrings.put(file.getName(), file.getText())
-            jsonSamplesAsMaps.put(file.getName(), slurper.parse(file) as Map<String, Object>)
+            jsonSamples.put(file.getName(), slurper.parse(file) as Map<String, Object>)
         })
+
+        return jsonSamples
+    }
+
+    static Map<String, String> setupJsonSamplesAsStrings() {
+        Map<String, String> jsonSamples = new HashMap<>()
+        JsonSlurper slurper = new JsonSlurper()
+
+        jsonSampleUris.forEach({ file ->
+            jsonSamples.put(file.getName(), file.getText())
+        })
+
+        return jsonSamples
     }
 }

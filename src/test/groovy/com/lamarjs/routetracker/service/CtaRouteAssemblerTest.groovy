@@ -13,7 +13,7 @@ class CtaRouteAssemblerTest extends BaseSpecification {
     @Autowired
     RouteRepository routeRepository
 
-    void cleanup() {
+    void setup() {
         routeRepository.deleteRoutes()
     }
 
@@ -27,7 +27,6 @@ class CtaRouteAssemblerTest extends BaseSpecification {
         routes.size() > 0
     }
 
-    @Ignore
     def "should initialize routes from cta api request service"() {
         List<Route> routes = ctaRouteAssembler.loadRoutesFromCtaApi()
 

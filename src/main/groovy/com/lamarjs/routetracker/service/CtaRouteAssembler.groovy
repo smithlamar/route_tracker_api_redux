@@ -54,21 +54,32 @@ class CtaRouteAssembler {
     List<Route> loadRoutesFromCtaApi() {
 
         List<Route> routes = ctaApiRequestService.getRoutes()
+        List<Route> syncRoutes = Collections.synchronizedList(routes)
 
-        routes.parallelStream().forEach({ route ->
-            route.setCreatedDateInEpochSeconds(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
-            List<Direction> directions = ctaApiRequestService.getDirections(route.getRouteId())
+        synchronized (syncRoutes) {
 
-            route.setStops(new ArrayList<Stop>())
-            directions.parallelStream().forEach({ direction ->
+            syncRoutes.parallelStream().forEach({ route ->
+                route.setCreatedDateInEpochSeconds(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
 
-                List<Stop> stops = ctaApiRequestService.getStops(route.getRouteId(), direction)
-                stops.parallelStream().forEach({ stop ->
-                    stop.setDirection(direction.toString())
+                List<Direction> directions = ctaApiRequestService.getDirections(route.getRouteId())
+
+                route.setStops(new ArrayList<Stop>())
+
+                directions.parallelStream().forEach({ direction ->
+
+                    List<Stop> stops = ctaApiRequestService.getStops(route.getRouteId(), direction)
+                    List<Stop> stopsSync = Collections.synchronizedList(stops)
+
+                    synchronized (stopsSync) {
+                        stopsSync.parallelStream().forEach({ stop ->
+                            stop.setDirection(direction.toString())
+                        })
+                    }
+                    route.getStops().addAll(stops)
                 })
-                route.getStops().addAll(stops)
             })
-        })
+        }
+
 
         return routes
     }
