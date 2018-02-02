@@ -3,7 +3,7 @@ package com.lamarjs.routetracker.service
 import com.lamarjs.routetracker.data.cta.api.common.Direction
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
-import com.lamarjs.routetracker.persistence.SavedRoutesFileManager
+import com.lamarjs.routetracker.persistence.RouteRepository
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -14,37 +14,36 @@ import java.time.ZoneOffset
 class CtaRouteAssembler {
 
     CtaApiRequestService ctaApiRequestService
-    SavedRoutesFileManager savedRoutesFileManager
-    Map<String, Route> assembledRoutes
+    RouteRepository routeRepository
+    Map<String, Route> routesMap
 
     @Autowired
-    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, SavedRoutesFileManager savedRoutesFileManager) {
+    CtaRouteAssembler(CtaApiRequestService ctaApiRequestService, RouteRepository routeRepository) {
         this.ctaApiRequestService = ctaApiRequestService
-        this.savedRoutesFileManager = savedRoutesFileManager
+        this.routeRepository = routeRepository
     }
 
     List<Route> initializeRoutes() {
 
         List<Route> initializedRoutes = new ArrayList<>()
 
-        if (savedRoutesFileManager.savedRoutesFileIsStale()) {
-            initializedRoutes = loadRoutesFromCtaApi()
-            savedRoutesFileManager.saveRoutes(initializedRoutes)
-        } else {
-            initializedRoutes = savedRoutesFileManager.loadRoutes()
-            Long routeCreationTime = initializedRoutes.get(0).getCreatedDateInEpochSeconds()
+        if (!routesMap && routeRepository.isStale()) {
 
-            if (SavedRoutesFileManager.isOlderThanSevenDays(routeCreationTime)) {
-                initializedRoutes = loadRoutesFromCtaApi()
-                savedRoutesFileManager.saveRoutes(initializedRoutes)
-            }
+            log.info("Assembled routes were either stale or non-existent. Initializing from CTA API.")
+            initializedRoutes = loadRoutesFromCtaApi()
+            log.debug("Loaded routes from CTA API.")
+
+            routeRepository.saveRoutes(initializedRoutes)
+        } else {
+            log.info("Initializing routes from route repository.")
+            initializedRoutes = routeRepository.getRoutes()
         }
 
-        assembledRoutes = buildRoutesMap(initializedRoutes)
+        routesMap = buildRoutesMap(initializedRoutes)
         return initializedRoutes
     }
 
-    private static Map<String, Route> buildRoutesMap(List<Route> routes) {
+    static Map<String, Route> buildRoutesMap(List<Route> routes) {
         Map<String, Route> routesMap = new HashMap<>()
         routes.forEach({ route ->
             routesMap.put(route.routeId, route)
@@ -55,21 +54,32 @@ class CtaRouteAssembler {
     List<Route> loadRoutesFromCtaApi() {
 
         List<Route> routes = ctaApiRequestService.getRoutes()
+        List<Route> syncRoutes = Collections.synchronizedList(routes)
 
-        routes.parallelStream().forEach({ route ->
-            route.setCreatedDateInEpochSeconds(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
-            List<Direction> directions = ctaApiRequestService.getDirections(route.getRouteId())
+        synchronized (syncRoutes) {
 
-            route.setStops(new ArrayList<Stop>())
-            directions.parallelStream().forEach({ direction ->
+            syncRoutes.parallelStream().forEach({ route ->
+                route.setCreatedDateInEpochSeconds(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
 
-                List<Stop> stops = ctaApiRequestService.getStops(route.getRouteId(), direction)
-                stops.parallelStream().forEach({ stop ->
-                    stop.setDirection(direction.toString())
+                List<Direction> directions = ctaApiRequestService.getDirections(route.getRouteId())
+
+                route.setStops(new ArrayList<Stop>())
+
+                directions.parallelStream().forEach({ direction ->
+
+                    List<Stop> stops = ctaApiRequestService.getStops(route.getRouteId(), direction)
+                    List<Stop> stopsSync = Collections.synchronizedList(stops)
+
+                    synchronized (stopsSync) {
+                        stopsSync.parallelStream().forEach({ stop ->
+                            stop.setDirection(direction.toString())
+                        })
+                    }
+                    route.getStops().addAll(stops)
                 })
-                route.getStops().addAll(stops)
             })
-        })
+        }
+
 
         return routes
     }

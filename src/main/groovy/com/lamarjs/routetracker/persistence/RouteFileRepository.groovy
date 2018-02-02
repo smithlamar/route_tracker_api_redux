@@ -9,48 +9,38 @@ import com.lamarjs.routetracker.data.cta.api.common.Route
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 
 @Slf4j
-class SavedRoutesFileManager {
-    public static final String SAVED_ROUTES_ROOT_NAME = "routes"
+class RouteFileRepository implements RouteRepository {
+
+    public static final String ROUTES_JSON_ROOT_NAME = "routes"
     ObjectMapper objectMapper
     String routesJsonFilePath
 
-    @Autowired
-    SavedRoutesFileManager(ObjectMapper objectMapper, String routesJsonFilePath) {
+    RouteFileRepository(ObjectMapper objectMapper, String routesJsonFilePath) {
         this.objectMapper = objectMapper
         this.routesJsonFilePath = routesJsonFilePath
     }
 
-    List<Route> loadRoutes() {
-        loadRoutesFromFile(routesJsonFilePath)
-    }
-
-
-    void saveRoutes(List<Route> routes) {
-        saveRoutesToFile(routes, routesJsonFilePath)
-    }
-
-    List<Route> loadRoutesFromFile(String pathToJsonFile) {
+    @Override
+    List<Route> getRoutes() {
         ObjectReader reader = objectMapper.readerFor(new TypeReference<List<Route>>() {
-        }).withRootName(SAVED_ROUTES_ROOT_NAME)
-        return reader.readValue(new File(pathToJsonFile))
+        }).withRootName(ROUTES_JSON_ROOT_NAME)
+        return reader.readValue(new File(routesJsonFilePath))
     }
 
-    void saveRoutesToFile(List<Route> routes, String path) {
-        File outputFile = new File(path)
+    @Override
+    void saveRoutes(List<Route> routes) {
+        File outputFile = new File(routesJsonFilePath)
         File parentDirectory = new File(outputFile.getParent())
         parentDirectory.mkdir()
 
         File tempFile = new File(parentDirectory.toString() + "/temp_" + outputFile.getName())
         tempFile.createNewFile()
-
         ObjectWriter writer = objectMapper.writerFor(new TypeReference<List<Route>>() {
-        }).with(SerializationFeature.WRAP_ROOT_VALUE).withRootName(SAVED_ROUTES_ROOT_NAME)
+        }).with(SerializationFeature.WRAP_ROOT_VALUE).withRootName(ROUTES_JSON_ROOT_NAME)
 
         tempFile << writer.writeValueAsString(routes)
 
@@ -63,16 +53,20 @@ class SavedRoutesFileManager {
         log.info("Wrote routes to file: ${outputFile}")
     }
 
-    boolean savedRoutesFileIsStale() {
-        return fileIsStale(routesJsonFilePath)
+    @Override
+    void deleteRoutes() {
+        File savedRoutes = new File(routesJsonFilePath)
+        if (savedRoutes.exists()) {
+            savedRoutes.delete()
+        }
+        log.info("Saved routes file: ${routesJsonFilePath} deleted.")
     }
 
-    static boolean fileIsStale(String path) {
-        File file = new File(path)
-        return !file.exists() || isOlderThanSevenDays(file.lastModified())
+    @Override
+    boolean isStale() {
+        File file = new File(routesJsonFilePath)
+        return !file.exists() || PersistenceUtils.isOlderThanSevenDays(file.lastModified())
     }
 
-    static boolean isOlderThanSevenDays(Long creationTime) {
-        return creationTime < LocalDateTime.now().minusDays(7).toEpochSecond(ZoneOffset.UTC)
-    }
+
 }
