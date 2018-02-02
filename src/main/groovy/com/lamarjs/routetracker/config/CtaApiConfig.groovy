@@ -3,12 +3,10 @@ package com.lamarjs.routetracker.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamarjs.routetracker.controller.RouteTrackerApiController
 import com.lamarjs.routetracker.persistence.RouteDatabaseRepository
-import com.lamarjs.routetracker.persistence.RouteFileRepository
 import com.lamarjs.routetracker.persistence.RouteRepository
 import com.lamarjs.routetracker.service.CtaApiRequestService
 import com.lamarjs.routetracker.service.CtaRouteAssembler
 import com.lamarjs.routetracker.util.CtaApiUriBuilder
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -17,8 +15,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 import org.springframework.context.annotation.Scope
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
+
+import javax.sql.DataSource
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
@@ -28,19 +29,34 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Configuration
 class CtaApiConfig {
 
-    @Autowired
-    JdbcTemplate jdbcTemplate
-
     @Bean
     RouteTrackerApiController routeTrackerApiController(CtaRouteAssembler ctaRouteAssembler, CtaApiRequestService ctaApiRequestService) {
         return new RouteTrackerApiController(ctaRouteAssembler, ctaApiRequestService)
     }
 
     @Bean
+    JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource)
+    }
+
+    @Bean
+    DataSource dataSource(@Value("\${spring.datasource.driver-class-name}") String driver,
+                          @Value("\${spring.datasource.url}") String url,
+                          @Value("\${spring.datasource.username}") String username,
+                          @Value("\${spring.datasource.password}") String password) {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driver)
+        dataSource.setUrl(url)
+        dataSource.setUsername(username)
+        dataSource.setPassword(password)
+        return dataSource
+    }
+
+    @Bean
     CtaRouteAssembler ctaRouteAssembler(CtaApiRequestService ctaApiRequestService,
                                         @Qualifier("routeDatabaseRepository") RouteRepository routeDatabaseRepository) {
         CtaRouteAssembler ctaRouteAssembler = new CtaRouteAssembler(ctaApiRequestService, routeDatabaseRepository)
-//        ctaRouteAssembler.initializeRoutes()
+        ctaRouteAssembler.initializeRoutes()
         return ctaRouteAssembler
     }
 

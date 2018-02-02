@@ -3,24 +3,19 @@ package com.lamarjs.routetracker.persistence
 import com.lamarjs.routetracker.data.cta.api.common.Route
 import com.lamarjs.routetracker.data.cta.api.common.Stop
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.jdbc.core.BatchPreparedStatementSetter
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 
-import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.sql.Types
-
-import static java.sql.Types.VARCHAR
 
 class RouteDatabaseRepository implements RouteRepository {
 
-    String SAVE_ROUTES_SQL = "MERGE INTO routes (routeId, routeName, routeColor, createdDateInEpochSeconds) " +
+    String SAVE_ROUTES_SQL = "INSERT IGNORE INTO routes (routeId, routeName, routeColor, createdDateInEpochSeconds) " +
             "VALUES (?, ?, ?, ?);"
-    String SAVE_STOPS_SQL = "MERGE INTO stops (stopId, stopName, latitude, longitude, direction) " +
+    String SAVE_STOPS_SQL = "INSERT IGNORE INTO stops (stopId, stopName, latitude, longitude, direction) " +
             "VALUES (?, ?, ?, ?, ?);"
-    String SAVE_STOPS_MAP_SQL = "MERGE INTO routes_stops_map (routeId, stopId) VALUES (?, ?)"
+    String SAVE_STOPS_MAP_SQL = "INSERT IGNORE INTO routes_stops_map (routeId, stopId) VALUES (?, ?)"
 
     String GET_ROUTES_SQL = "SELECT * FROM routes;"
 

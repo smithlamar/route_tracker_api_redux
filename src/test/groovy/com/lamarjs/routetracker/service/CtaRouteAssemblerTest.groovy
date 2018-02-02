@@ -17,6 +17,10 @@ class CtaRouteAssemblerTest extends BaseSpecification {
         routeRepository.deleteRoutes()
     }
 
+    void cleanup() {
+        routeRepository.deleteRoutes()
+    }
+
     def "should initialze routes"() {
 
         when:

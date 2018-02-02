@@ -1,4 +1,6 @@
 spring:
   datasource:
-    platform: h2
-    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://localhost:3306/route_tracker_api
+    username: route_tracker_api
+    driver-class-name: com.mysql.jdbc.Driver
+    password: ${ROUTE_TRACKER_API_MARIA_AUTH}
