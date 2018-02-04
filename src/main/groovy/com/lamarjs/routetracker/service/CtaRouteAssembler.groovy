@@ -27,9 +27,9 @@ class CtaRouteAssembler {
 
         List<Route> initializedRoutes = new ArrayList<>()
 
-        if (!routesMap && routeRepository.isStale()) {
+        if (routeRepository.isStale()) {
 
-            log.info("Assembled routes were either stale or non-existent. Initializing from CTA API.")
+            log.info("Repository routes were stale or non-existent. Initializing from CTA API.")
             initializedRoutes = loadRoutesFromCtaApi()
             log.debug("Loaded routes from CTA API.")
 
@@ -37,10 +37,25 @@ class CtaRouteAssembler {
         } else {
             log.info("Initializing routes from route repository.")
             initializedRoutes = routeRepository.getRoutes()
+
+        }
+
+        if (!routesIdsAreIdenticalToCtaApiRoutes(initializedRoutes)) {
+            log.info("Repository routes no longer match existing cta routes. Re-initializing from cta api.")
+            initializedRoutes = loadRoutesFromCtaApi()
         }
 
         routesMap = buildRoutesMap(initializedRoutes)
         return initializedRoutes
+    }
+
+    Boolean routesIdsAreIdenticalToCtaApiRoutes(List<Route> routes) {
+
+        List<String> sortedRoutesIds = new ArrayList<>(routes.routeId.sort())
+
+        List<String> sortedCtaRouteIds = new ArrayList<>(ctaApiRequestService.getRoutes().routeId.sort())
+
+        return sortedRoutesIds.size() == sortedCtaRouteIds.size() && sortedRoutesIds == sortedCtaRouteIds
     }
 
     static Map<String, Route> buildRoutesMap(List<Route> routes) {
